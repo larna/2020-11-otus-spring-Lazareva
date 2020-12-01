@@ -1,7 +1,6 @@
 package ru.otus.spring.dao.testing;
 
 import ru.otus.spring.domain.Person;
-import ru.otus.spring.domain.testing.Question;
 import ru.otus.spring.domain.testing.StudentTest;
 
 import java.time.LocalDate;
@@ -19,22 +18,17 @@ public class TestDaoSimple implements TestDao {
      */
     private final List<StudentTest> tests = new ArrayList<>();
 
+    /**
+     * Поиск теста для студента и за указанную дату
+     *
+     * @param student - студент
+     * @param date    - дата сдачи теста
+     * @return будет возвращен найденный тест,
+     * @throws TestNotFoundException    если тест не найден
+     * @throws IllegalArgumentException если бубут переданы null в качестве аргументов
+     */
     @Override
-    public StudentTest createNewTest(Person student, List<Question> questions) {
-        StudentTest test = new StudentTest(LocalDate.now(), student, questions);
-        if (tests.contains(test)) {
-            String message = String.format("( student - %s, date - %s )",
-                    test.getStudent().getName(),
-                    test.getTestDate().format(DateTimeFormatter.ISO_DATE));
-            throw new DuplicateTestException(message);
-        }
-
-        tests.add(test);
-        return test;
-    }
-
-    @Override
-    public StudentTest findByStudentAndDate(Person student, LocalDate date) {
+    public StudentTest findByStudentAndDate(Person student, LocalDate date) throws TestNotFoundException, IllegalArgumentException {
         if (student == null || date == null)
             throw new IllegalArgumentException("Student or date is null");
 
@@ -50,6 +44,28 @@ public class TestDaoSimple implements TestDao {
         String message = String.format("( student - %s, date - %s )",
                 student.getName(), date.format(DateTimeFormatter.ISO_DATE));
         throw new TestNotFoundException(message);
+    }
+
+    /**
+     * Сохранение теста
+     * @param test - тест студента
+     */
+    @Override
+    public void save(StudentTest test) {
+        if (tests.contains(test)) {//есть уже такой тест   
+            return;
+        }
+        tests.add(test);
+
+    }
+
+    /**
+     * Просмотр всех тестов студентов
+     * @return список всех тестов
+     */
+    @Override
+    public List<StudentTest> findAll() {
+        return tests;
     }
 
 }

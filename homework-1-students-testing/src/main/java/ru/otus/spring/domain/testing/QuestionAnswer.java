@@ -4,6 +4,9 @@ import lombok.Getter;
 
 import java.util.Objects;
 
+/**
+ * Класс описывающий ответы на вопросы с указанием правильный/неправильный.
+ */
 public class QuestionAnswer extends SimpleAnswer implements Answer {
     /**
      * Маркер является ли ответ правильным
@@ -25,5 +28,12 @@ public class QuestionAnswer extends SimpleAnswer implements Answer {
         QuestionAnswer that = (QuestionAnswer) o;
 
         return Objects.equals(isRightAnswer, that.isRightAnswer);
+    }
+
+    @Override
+    public String toString() {
+        return "QuestionAnswer{" +
+                "isRightAnswer=" + isRightAnswer +
+                '}';
     }
 }

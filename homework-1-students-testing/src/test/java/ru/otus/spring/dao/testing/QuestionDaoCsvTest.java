@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.spring.domain.testing.QuestionAnswer;
-import ru.otus.spring.domain.testing.SimpleAnswer;
 import ru.otus.spring.domain.testing.Question;
 import ru.otus.spring.util.testing.QuestionParser;
 

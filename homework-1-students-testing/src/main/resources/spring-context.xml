@@ -24,7 +24,7 @@
 
     <!-- TODO: определите бин класса ru.otus.ru.otus.spring.PersonServiceImpl -->
     <bean id="personService" class="ru.otus.spring.service.PersonServiceImpl">
-        <property name="dao" ref="personDAO"/>
+        <constructor-arg name="dao" ref="personDAO"/>
     </bean>
 
 </beans>

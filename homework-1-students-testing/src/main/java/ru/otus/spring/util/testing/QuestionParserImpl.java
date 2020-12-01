@@ -3,30 +3,49 @@ package ru.otus.spring.util.testing;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import ru.otus.spring.domain.testing.SimpleAnswer;
 import ru.otus.spring.domain.testing.Question;
 import ru.otus.spring.domain.testing.QuestionAnswer;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * Парсер вопросов
+ * Вопрос и ответы содержаться вместе. В качестве разделителя используется символ ,
+ * Формат строки вопроса:
+ * Question?, answer1, true|false, answer2, true|false ... , answerN, true|false
  */
 public class QuestionParserImpl implements QuestionParser {
     private static final char DELIMITER = ',';
     private static final Integer START_ANSWER_INDEX = 1;
+    private static final Integer MINIMAL_TOKEN_COUNT_IN_ROW = 3;
 
     @Override
     public List<Question> parse(final InputStream in) throws IOException, QuestionFormatException {
-        CSVParser parser = CSVParser.parse(in, Charset.forName("UTF-8"), CSVFormat.RFC4180.withDelimiter(DELIMITER));
-        return parser.getRecords().stream()
-                .filter(row -> row.size() >= 2)
+        CSVParser parser = CSVParser.parse(in, StandardCharsets.UTF_8, CSVFormat.RFC4180.withDelimiter(DELIMITER));
+
+        final List<CSVRecord> records = parser.getRecords();
+        long wrongFormatRowCount = records.stream()
+                .filter(row -> row.size() >= 1 && row.size() < MINIMAL_TOKEN_COUNT_IN_ROW)//должно быть не меньше 3 токенов
+                .filter(row -> row.size() == 1 && !row.get(0).isEmpty()) //отсекаем пустые строки из неправильного формата
+                .count();
+        if (wrongFormatRowCount > 0) {
+            String message = records.stream()
+                    .filter(row -> row.size() >= 1 && row.size() < MINIMAL_TOKEN_COUNT_IN_ROW)
+                    .map(row -> row.toString())
+                    .reduce((s1, s2) -> s1 + " " + s2).orElse("");
+            throw new QuestionFormatException(message);
+        }
+
+        return records.stream()
+                .filter(row -> row.size() >= MINIMAL_TOKEN_COUNT_IN_ROW)
                 .map(row -> this.parseQuestion(row))
                 .collect(Collectors.toList());
     }
@@ -67,9 +86,7 @@ public class QuestionParserImpl implements QuestionParser {
 
     private boolean checkAnswerCount(int actualElementsCount, int answerCount) {
         int expectedElementsCount = answerCount * 2 + START_ANSWER_INDEX;
-        if (actualElementsCount == expectedElementsCount)
-            return true;
-        return false;
+        return actualElementsCount == expectedElementsCount ? true : false;
     }
 
 
@@ -78,9 +95,7 @@ public class QuestionParserImpl implements QuestionParser {
             return false;
         final List<String> expectedBooleanValues = Arrays.asList("true", "false");
 
-        if (expectedBooleanValues.indexOf(booleanString.toLowerCase()) == -1)
-            return false;
-        return true;
+        return expectedBooleanValues.contains(booleanString.toLowerCase());
     }
 
 }

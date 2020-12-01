@@ -4,6 +4,14 @@ import ru.otus.spring.domain.testing.Question;
 
 import java.util.List;
 
+/**
+ * Сервис вопросов
+ */
 public interface QuestionService {
+    /**
+     * Получить все вопросы
+     *
+     * @return список всех вопросов
+     */
     List<Question> getQuestions();
 }

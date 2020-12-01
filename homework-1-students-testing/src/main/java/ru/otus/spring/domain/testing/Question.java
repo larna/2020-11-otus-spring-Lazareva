@@ -2,7 +2,6 @@ package ru.otus.spring.domain.testing;
 
 import lombok.Getter;
 
-import java.lang.reflect.AnnotatedWildcardType;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,11 +27,16 @@ public class Question {
         this.answers = accessibleForSelectAnswers;
     }
 
+    /**
+     * Проверить правильность ответа
+     *
+     * @param checkingAnswer - проверяемый ответ
+     * @return true - если ответ правильный, а иначе - false
+     */
     public Boolean checkAnswer(Answer checkingAnswer) {
 
         Optional<QuestionAnswer> foundObject = this.answers.stream()
-                .peek(answer->System.out.println(answer.getAnswer() + " " +checkingAnswer.equals(answer)))
-                .filter(answer -> checkingAnswer.equals(answer))
+                .filter(answer -> checkingAnswer.getAnswer().equals(answer.getAnswer()))
                 .findFirst();
         if (foundObject.isPresent())
             return foundObject.get().getIsRightAnswer();
@@ -40,6 +44,11 @@ public class Question {
         return false;
     }
 
+    /**
+     * Получить список всех возможных ответов на вопрос
+     *
+     * @return список возможных ответов
+     */
     public List<Answer> getAnswers() {
         return answers.stream()
                 .map(questionAnswer -> (Answer) questionAnswer)
@@ -57,17 +66,39 @@ public class Question {
         return Objects.equals(answers, question1.answers);
     }
 
-    public Answer getAnswerByIndex(Integer index) {
-        if (answers.size() <= index)
-            throw new ArrayIndexOutOfBoundsException();
-        return answers.get(index);
+    /**
+     * Получить ответ по номеру
+     *
+     * @param number - порядковый номер вопроса в списке
+     * @return объект Answer
+     * @throws IllegalArgumentException - в случае если номер не попадает в границы массива
+     */
+    public Answer getAnswerByNumber(Integer number) throws IllegalArgumentException {
+        if (answers.size() < number)
+            throw new IllegalArgumentException();
+        return answers.get(number - 1);
     }
 
-    public String getAnswerForChoice() {
+    /**
+     * Сформировать строку для выбора ответа на вопрос
+     *
+     * @return ответы в виде строки с указанием порядкового номера, который будет выбирать пользователь
+     */
+    public String getAnswersStringForChoice() {
         if (answers.isEmpty())
             return "";
         return IntStream.range(0, answers.size())
                 .mapToObj(i -> String.format("%d. %s", i + 1, answers.get(i).getAnswer()))
                 .reduce((s1, s2) -> s1 + " " + s2).orElse("");
+    }
+
+    /**
+     * Требует ли ответ ввода значения или требует выбора из списка ответов
+     *
+     * @return true - требуется ввод, false - требуется выбор из списка
+     */
+    public Boolean isInputAnswer() {
+        long wrongAnswerCount = answers.stream().filter(answer -> !answer.getIsRightAnswer()).count();
+        return wrongAnswerCount == 0;
     }
 }

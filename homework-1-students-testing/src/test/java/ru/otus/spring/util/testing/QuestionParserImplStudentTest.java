@@ -3,7 +3,6 @@ package ru.otus.spring.util.testing;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.spring.domain.testing.QuestionAnswer;
-import ru.otus.spring.domain.testing.SimpleAnswer;
 import ru.otus.spring.domain.testing.Question;
 
 import java.io.ByteArrayInputStream;

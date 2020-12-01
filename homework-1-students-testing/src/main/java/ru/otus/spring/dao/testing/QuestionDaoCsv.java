@@ -23,7 +23,7 @@ public class QuestionDaoCsv implements QuestionDao {
      * Метод findAll перечитывает файл каждый раз когда к нему обращаются
      * Вдруг за прошедшее время с последнего обращения файлик поменяли и там другие вопросы или ответы:)
      *
-     * @return
+     * @return список вопросов из ресурса
      */
     @Override
     public List<Question> findAll() {

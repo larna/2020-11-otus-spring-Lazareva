@@ -53,10 +53,21 @@ public class StudentTest {
         return Objects.equals(student, test.student);
     }
 
+    /**
+     * Добавить ответ студента в тест
+     *
+     * @param studentAnswer - объект ответ от студента
+     */
     public void addAnswer(Answer studentAnswer) {
         answers.add(studentAnswer);
     }
 
+    /**
+     * Сформировать строку с результатом теста
+     * Наверное это можно каким то отдельным классом нужно сделать TestResult ( тест, общая отметка, рекомендации )
+     *
+     * @return строка с информацией о результатах теста
+     */
     public String getResults() {
         String testHeader = String.format("Test results. Student: %s. Date: %s\n\n", student.getName(), testDate.format(DateTimeFormatter.ISO_DATE));
         StringBuilder testBody = new StringBuilder();
