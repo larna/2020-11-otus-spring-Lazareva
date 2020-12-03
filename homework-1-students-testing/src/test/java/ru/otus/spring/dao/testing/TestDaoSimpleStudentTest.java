@@ -5,7 +5,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.otus.spring.domain.Person;
 import ru.otus.spring.domain.testing.StudentTest;
-import ru.otus.spring.util.testing.QuestionFormatException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

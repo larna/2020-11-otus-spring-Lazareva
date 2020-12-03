@@ -13,18 +13,20 @@
         <constructor-arg name="dao" ref="questionDAO"/>
     </bean>
 
+    <bean id="personDAO" class="ru.otus.spring.dao.PersonDaoSimple"/>
+    <bean id="personService" class="ru.otus.spring.service.PersonServiceImpl">
+        <constructor-arg name="dao" ref="personDAO"/>
+    </bean>
+
     <bean id="testDAO" class="ru.otus.spring.dao.testing.TestDaoSimple"/>
     <bean id="testService" class="ru.otus.spring.service.testing.TestServiceImpl">
         <constructor-arg name="dao" ref="testDAO"/>
         <constructor-arg name="questionService" ref="questionService"/>
     </bean>
 
-    <!-- TODO: определите бин класса ru.otus.ru.otus.spring.dao.PersonDaoSimple -->
-    <bean id="personDAO" class="ru.otus.spring.dao.PersonDaoSimple"/>
-
-    <!-- TODO: определите бин класса ru.otus.ru.otus.spring.PersonServiceImpl -->
-    <bean id="personService" class="ru.otus.spring.service.PersonServiceImpl">
-        <constructor-arg name="dao" ref="personDAO"/>
+    <bean id="testController" class="ru.otus.spring.controller.TestControllerConsole">
+        <constructor-arg name="personService" ref="personService"/>
+        <constructor-arg name="testService" ref="testService"/>
     </bean>
 
 </beans>

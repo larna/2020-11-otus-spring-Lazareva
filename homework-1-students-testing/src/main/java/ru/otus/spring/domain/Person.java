@@ -1,5 +1,6 @@
 package ru.otus.spring.domain;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,34 +15,21 @@ import java.util.Objects;
  * учебного заведения/курсов иерархию можно будет дополнить.
  * Может еще что-то можно придумать, но на этом моя фантазия иссякла :))))
  */
+@EqualsAndHashCode
 public class Person {
     /**
      * Имя
      */
     @Getter
-    @Setter
     private final String name;
     /**
      * Возраст
      */
     @Getter
-    @Setter
     private final int age;
 
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Person person = (Person) o;
-
-        if (age != person.age) return false;
-        return Objects.equals(name, person.name);
-    }
-
 }

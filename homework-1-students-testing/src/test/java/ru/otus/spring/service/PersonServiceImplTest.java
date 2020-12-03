@@ -8,14 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.otus.spring.dao.PersonDao;
 import ru.otus.spring.domain.Person;
-import ru.otus.spring.domain.testing.Question;
-import ru.otus.spring.domain.testing.QuestionAnswer;
-
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

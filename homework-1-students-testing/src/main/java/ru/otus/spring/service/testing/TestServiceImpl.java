@@ -1,15 +1,19 @@
 package ru.otus.spring.service.testing;
 
+import ru.otus.spring.dao.PersonNotFoundException;
 import ru.otus.spring.dao.testing.TestDao;
 import ru.otus.spring.dao.testing.TestNotFoundException;
 import ru.otus.spring.domain.Person;
 import ru.otus.spring.domain.testing.Answer;
 import ru.otus.spring.domain.testing.Question;
+import ru.otus.spring.domain.testing.SimpleAnswer;
 import ru.otus.spring.domain.testing.StudentTest;
+import ru.otus.spring.service.PersonService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Интерфейс сервиса Тестов

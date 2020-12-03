@@ -1,6 +1,8 @@
 package ru.otus.spring.domain.testing;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,15 +13,18 @@ import java.util.stream.IntStream;
 /**
  * Класс описывает вопросы, которые будут заданы студентам при тестировании
  */
+@EqualsAndHashCode
 public class Question {
     /**
      * Собственно сам вопрос в виде текста
      */
     @Getter
+    @NonNull
     private final String question;
     /**
      * Список доступных ответов
      */
+    @NonNull
     private final List<QuestionAnswer> answers;
 
     public Question(String question, List<QuestionAnswer> accessibleForSelectAnswers) {
@@ -53,17 +58,6 @@ public class Question {
         return answers.stream()
                 .map(questionAnswer -> (Answer) questionAnswer)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Question question1 = (Question) o;
-
-        if (!Objects.equals(question, question1.question)) return false;
-        return Objects.equals(answers, question1.answers);
     }
 
     /**

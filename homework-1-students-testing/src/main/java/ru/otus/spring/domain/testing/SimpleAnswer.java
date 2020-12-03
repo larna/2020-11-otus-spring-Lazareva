@@ -1,37 +1,27 @@
 package ru.otus.spring.domain.testing;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.Objects;
 
 /**
  * Класс описывает ответ на вопрос, получаемый от студента
  */
+@EqualsAndHashCode
+@ToString
 public class SimpleAnswer implements Answer {
     /**
      * Собственно сам ответ на вопрос
      */
     @Getter
+    @NonNull
     private final String answer;
 
     public SimpleAnswer(String answer) {
         this.answer = answer;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        SimpleAnswer simpleAnswer1 = (SimpleAnswer) o;
-
-        return Objects.equals(answer, simpleAnswer1.answer);
-    }
-
-    @Override
-    public String toString() {
-        return "SimpleAnswer{" +
-                "answer='" + answer + '\'' +
-                '}';
-    }
 }

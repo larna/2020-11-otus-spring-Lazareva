@@ -1,6 +1,8 @@
 package ru.otus.spring.domain.testing;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NonNull;
 import ru.otus.spring.domain.Person;
 
 import java.time.LocalDate;
@@ -13,26 +15,31 @@ import java.util.stream.IntStream;
 /**
  * Класс описывает тест студента
  */
+@EqualsAndHashCode(exclude = {"questions", "answers"})
 public class StudentTest {
     /**
      * Дата проведения теста
      */
     @Getter
+    @NonNull
     private final LocalDate testDate;
     /**
      * Студент
      */
     @Getter
+    @NonNull
     private final Person student;
     /**
      * Список вопросов
      */
     @Getter
+    @NonNull
     private final List<Question> questions;
     /**
      * Список ответов
      */
     @Getter
+    @NonNull
     private final List<Answer> answers;
 
     public StudentTest(LocalDate testDate, Person student, List<Question> questions) {
@@ -40,17 +47,6 @@ public class StudentTest {
         this.student = student;
         this.questions = questions;
         this.answers = new ArrayList<>();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        StudentTest test = (StudentTest) o;
-
-        if (!Objects.equals(testDate, test.testDate)) return false;
-        return Objects.equals(student, test.student);
     }
 
     /**

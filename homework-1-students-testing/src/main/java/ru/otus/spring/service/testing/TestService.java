@@ -1,6 +1,5 @@
 package ru.otus.spring.service.testing;
 
-import ru.otus.spring.dao.testing.TestNotFoundException;
 import ru.otus.spring.domain.Person;
 import ru.otus.spring.domain.testing.Answer;
 import ru.otus.spring.domain.testing.StudentTest;
