@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="questionParser" class="ru.otus.spring.util.testing.QuestionParserImpl"/>
+    <bean id="questionDAO" class="ru.otus.spring.dao.testing.QuestionDaoCsv">
+        <constructor-arg name="parser" ref="questionParser"/>
+        <constructor-arg name="questionsResource" value="/test-questions.csv"/>
+    </bean>
+    <bean id="questionService" class="ru.otus.spring.service.testing.QuestionServiceImpl">
+        <constructor-arg name="dao" ref="questionDAO"/>
+    </bean>
+
+    <bean id="personDAO" class="ru.otus.spring.dao.PersonDaoSimple"/>
+    <bean id="personService" class="ru.otus.spring.service.PersonServiceImpl">
+        <constructor-arg name="dao" ref="personDAO"/>
+    </bean>
+
+    <bean id="testDAO" class="ru.otus.spring.dao.testing.TestDaoSimple"/>
+    <bean id="testService" class="ru.otus.spring.service.testing.TestServiceImpl">
+        <constructor-arg name="dao" ref="testDAO"/>
+        <constructor-arg name="questionService" ref="questionService"/>
+    </bean>
+
+    <bean id="testController" class="ru.otus.spring.controller.TestControllerConsole">
+        <constructor-arg name="personService" ref="personService"/>
+        <constructor-arg name="testService" ref="testService"/>
+    </bean>
+
+</beans>
