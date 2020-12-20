@@ -26,8 +26,8 @@ class TestControllerImplTest {
     private TestResultSender testResultPrinter;
     @Mock
     private LoginProcessService loginService;
-
-    private final MenuServiceMock menuService = new MenuServiceMock();
+    @Mock
+    private MenuService menuService;
 
     @BeforeEach
     void init(){
@@ -36,6 +36,7 @@ class TestControllerImplTest {
     @DisplayName("Метод testing должен вызывать метод LoginService.login и UITestService.testStudent")
     @Test
     void shouldInvokeLoginAndTesting(){
+        given(menuService.getCommand()).willReturn(MenuService.Command.EXIT);
         testController.start();
         verify(testProcessService, times(1)).testStudent(any());
         verify(loginService, times(1)).login();
