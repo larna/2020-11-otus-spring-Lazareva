@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.otus.spring.dao.testing.QuestionDao;
 import ru.otus.spring.dao.testing.TestDao;
 import ru.otus.spring.dao.testing.TestNotFoundException;
 import ru.otus.spring.domain.Person;

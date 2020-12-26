@@ -46,6 +46,7 @@ public class PersonDaoSimple implements PersonDao {
      * @return объект Person
      * @throws PersonNotFoundException если объект не найден
      */
+    @Override
     public Person findByNameAndSurname(String name, String surname) throws PersonNotFoundException {
         Optional<Person> foundStudent = personStore.stream()
                 .filter(person -> person.getFullName().equalsIgnoreCase(Person.fullNameOf(name, surname)))

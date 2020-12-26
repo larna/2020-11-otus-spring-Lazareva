@@ -1,8 +1,6 @@
 package ru.otus.spring;
 
 import org.springframework.context.annotation.*;
-import ru.otus.spring.config.DaoConfig;
-import ru.otus.spring.config.ServiceConfig;
 import ru.otus.spring.controller.TestController;
 
 @Configuration

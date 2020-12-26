@@ -7,7 +7,6 @@ import lombok.NonNull;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * Класс описывает вопросы, которые будут заданы студентам при тестировании

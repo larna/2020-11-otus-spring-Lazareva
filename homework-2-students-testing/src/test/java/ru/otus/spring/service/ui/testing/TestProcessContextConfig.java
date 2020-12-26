@@ -1,21 +1,15 @@
 package ru.otus.spring.service.ui.testing;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
-import ru.otus.spring.dao.testing.QuestionDao;
-import ru.otus.spring.dao.testing.QuestionDaoCsv;
 import ru.otus.spring.dao.testing.TestDao;
 import ru.otus.spring.dao.testing.TestDaoSimple;
 import ru.otus.spring.service.io.IOService;
 import ru.otus.spring.service.testing.QuestionService;
-import ru.otus.spring.service.testing.QuestionServiceImpl;
 import ru.otus.spring.service.testing.TestService;
 import ru.otus.spring.service.testing.TestServiceImpl;
 import ru.otus.spring.service.ui.testing.question.AskQuestionHandler;
-import ru.otus.spring.util.testing.QuestionParser;
-import ru.otus.spring.util.testing.QuestionParserImpl;
 
 import java.util.List;
 

@@ -1,14 +1,11 @@
 package ru.otus.spring.service.testing;
 
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
-import org.springframework.core.env.Environment;
 import ru.otus.spring.dao.testing.QuestionDao;
 import ru.otus.spring.dao.testing.QuestionDaoCsv;
 import ru.otus.spring.dao.testing.TestDao;
-import ru.otus.spring.service.io.IOService;
 import ru.otus.spring.util.testing.QuestionParserImpl;
 
 @Configuration

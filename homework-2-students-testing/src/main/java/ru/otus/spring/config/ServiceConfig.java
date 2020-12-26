@@ -2,14 +2,14 @@ package ru.otus.spring.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import ru.otus.spring.dao.person.PersonDao;
 import ru.otus.spring.dao.testing.QuestionDao;
 import ru.otus.spring.service.person.PersonService;
 import ru.otus.spring.service.person.PersonServiceImpl;
 import ru.otus.spring.service.io.IOServiceConsole;
 import ru.otus.spring.service.io.IOService;
-import ru.otus.spring.service.testing.*;
+import ru.otus.spring.service.testing.QuestionService;
+import ru.otus.spring.service.testing.QuestionServiceImpl;
 
 @Configuration
 public class ServiceConfig {

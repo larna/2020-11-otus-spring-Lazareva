@@ -4,16 +4,10 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 import ru.otus.spring.domain.Person;
-import ru.otus.spring.domain.testing.results.Header;
-import ru.otus.spring.domain.testing.results.ReportRow;
-import ru.otus.spring.domain.testing.results.TestResultsReport;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.IntStream;
 
 /**
  * Класс описывает тест студента

@@ -14,24 +14,20 @@ import lombok.NonNull;
  * Может еще что-то можно придумать, но на этом моя фантазия иссякла :))))
  */
 @EqualsAndHashCode
+@Getter
+@NonNull
 public class Person {
     /**
      * Фамилия
      */
-    @Getter
-    @NonNull
     private final String surname;
     /**
      * Имя
      */
-    @Getter
-    @NonNull
     private final String name;
     /**
      * Возраст
      */
-    @Getter
-    @NonNull
     private final int age;
 
     public Person(@NonNull String surname, @NonNull String name, @NonNull int age) {

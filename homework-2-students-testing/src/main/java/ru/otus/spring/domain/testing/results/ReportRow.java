@@ -6,8 +6,6 @@ import lombok.ToString;
 import ru.otus.spring.domain.testing.Answer;
 import ru.otus.spring.domain.testing.Question;
 
-import java.util.List;
-
 @ToString
 public class ReportRow {
     @Getter

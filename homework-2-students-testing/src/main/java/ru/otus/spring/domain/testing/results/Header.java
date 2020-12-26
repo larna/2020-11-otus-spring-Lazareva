@@ -6,7 +6,6 @@ import lombok.ToString;
 import ru.otus.spring.domain.Person;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @ToString
 public class Header {

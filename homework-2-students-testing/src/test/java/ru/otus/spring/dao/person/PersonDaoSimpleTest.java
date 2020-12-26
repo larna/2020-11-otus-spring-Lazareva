@@ -4,12 +4,10 @@ import org.assertj.core.data.Index;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import ru.otus.spring.dao.person.PersonDao;
-import ru.otus.spring.dao.person.PersonDaoSimple;
 import ru.otus.spring.domain.Person;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DisplayName("Класс PersonDaoSimple")
 class PersonDaoSimpleTest {
