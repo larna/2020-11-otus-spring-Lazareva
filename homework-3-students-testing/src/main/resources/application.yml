@@ -1,0 +1,59 @@
+application:
+  title: Student Testing
+  version: 3.0
+  locale: ru_RU
+  accessibleLocales:
+    - ru
+    - en
+    - de
+  messages:
+    menu:
+      error: test.error
+      exit: test.menu.exit
+      title: test.menu.title
+      unknownCommand: test.menu.text.unknownCommand
+      commandTest: test.menuitem.command.test
+      commandExit: test.menuitem.command.exit
+    menuitem:
+      test: test.menuitem.text.continue
+      exit: test.menuitem.text.exit
+      locale: test.menuitem.text.locale
+    login:
+      invite: test.login.invite
+      wrongFormat: test.login.wrongFormat
+      accessDenied: test.login.accessDenied
+      error: test.error
+    testProcess:
+      comeback: test.process.messages.comeback
+      alreadyExists: test.process.messages.testAlreadyExists
+      error: test.error
+      answerInput: test.process.answer.input
+      answerSelect: test.process.answer.select
+      answerRepeatSelect: test.process.answer.repeatSelect
+    testResult:
+      header: test.result.header
+      failed: test.result.failed
+      done: test.result.done
+      answer: test.result.studentAnswer
+      answerRight: test.result.answer.right
+      answerWrong: test.result.answer.wrong
+      rightAnswersCount: test.result.rightStudentAnswerCount
+      rightAnswersNotDefined: test.result.rightAnswerNotDefined
+
+logging:
+  level:
+    org.springframework: "error"
+    ru.otus.spring: "error"
+
+questions:
+  csv:
+    path: /
+    prefixFileName: test-questions
+test:
+  pass:
+    percent: 70
+
+spring:
+  output:
+    ansi:
+      enabled: always
