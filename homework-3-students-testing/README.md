@@ -22,10 +22,10 @@ Production-ready приложение на Spring Boot
 - использовать ANSI-цвета для баннера.
 - если Ваш язык отличается от русского и английского - локализовать в нём.
 
-###Описание
+###Описание:
 
 Разбила приложение на 4 модуля:
-    - domain-students-testing - модель предметной области
-    - question-parser - для тренировки написания стартеров, вынесла функционал разбора csv файлов в отдельный модуль
-    - question-parser-starter - стартер для QuestionParser
-    - students-testing - приложение тестирования. 
+- domain-students-testing - модель предметной области
+- question-parser - для тренировки написания стартеров, вынесла функционал разбора csv файлов в отдельный модуль
+- question-parser-starter - стартер для QuestionParser
+- students-testing - приложение тестирования. 
