@@ -1,0 +1,9 @@
+${AnsiColor.GREEN}
+  ████████ ███████ ███████ ████████ 
+     ██    ██      ██         ██    
+     ██    █████   ███████    ██ 
+     ██    ██           ██    ██ 
+     ██    ███████ ███████    ██ 
+                                 
+ Spring Boot${spring-boot.formatted-version}
+${AnsiColor.DEFAULT}
