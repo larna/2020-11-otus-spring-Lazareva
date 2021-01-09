@@ -56,11 +56,13 @@ questions:
 
 logging:
   level:
-    org.springframework: "warn"
+    org.springframework: "info"
     ru.otus.spring: "error"
 
 spring:
   output:
     ansi:
       enabled: always
-
+  shell:
+    interactive:
+      enabled: false

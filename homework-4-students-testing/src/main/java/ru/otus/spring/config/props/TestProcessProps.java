@@ -1,7 +1,9 @@
 package ru.otus.spring.config.props;
 
+import lombok.NonNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import ru.otus.spring.domain.Person;
 import ru.otus.spring.service.i18n.LocalizationService;
 
 /**
@@ -23,5 +25,9 @@ public class TestProcessProps extends BaseMessagesProps {
 
     public String getErrorMessage() {
         return getMessage("error", ERROR_DEFAULT);
+    }
+
+    public String getStartTestMessage(@NonNull Person student) {
+        return getMessage("start", "Test started for student "+student.getFullName(), student.getFullName());
     }
 }

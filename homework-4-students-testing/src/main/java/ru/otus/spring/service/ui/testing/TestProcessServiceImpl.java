@@ -3,7 +3,6 @@ package ru.otus.spring.service.ui.testing;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.otus.spring.config.props.TestProcessProps;
 import ru.otus.spring.domain.Person;
@@ -42,6 +41,7 @@ public class TestProcessServiceImpl implements TestProcessService {
     public TestResultsReport testStudent(Person student) {
         StudentTest test;
         try {
+            ioService.outMessage(testProcessProps.getStartTestMessage(student));
             test = testService.createNewTest(student);
             askQuestions(test);
 

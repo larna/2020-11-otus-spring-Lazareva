@@ -6,13 +6,19 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.ActiveProfiles;
 import ru.otus.spring.config.QuestionDaoConfig;
 import ru.otus.spring.config.TestServiceCommonConfig;
-import ru.otus.spring.dao.testing.TestDao;
-import ru.otus.spring.dao.testing.TestNotFoundException;
+import ru.otus.spring.config.props.QuestionsResourceProps;
+import ru.otus.spring.config.props.TestProcessProps;
+import ru.otus.spring.dao.testing.*;
 import ru.otus.spring.domain.Person;
 import ru.otus.spring.domain.testing.Question;
 import ru.otus.spring.domain.testing.Answer;
@@ -20,6 +26,11 @@ import ru.otus.spring.domain.testing.StudentTest;
 import ru.otus.spring.domain.testing.results.TestResultsReport;
 import ru.otus.spring.service.i18n.LocalizationService;
 import ru.otus.spring.service.io.IOService;
+import ru.otus.spring.service.ui.testing.AskQuestionHandlerMock;
+import ru.otus.spring.service.ui.testing.TestProcessService;
+import ru.otus.spring.service.ui.testing.TestProcessServiceImpl;
+import ru.otus.spring.service.ui.testing.question.AskQuestionHandler;
+import ru.otus.spring.util.testing.QuestionParserImpl;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,10 +44,28 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @DisplayName("Класс TestService")
-@SpringBootTest(classes = {QuestionDaoConfig.class, TestServiceCommonConfig.class})
+@SpringBootTest
 @ActiveProfiles("test")
 @MockBean(IOService.class)
 class TestServiceImplTest {
+    @Configuration
+    @EnableConfigurationProperties({QuestionsResourceProps.class, TestProcessProps.class})
+    @ComponentScan(basePackages = {"ru.otus.spring.service", "ru.otus.spring.dao"}, lazyInit = true)
+    static class TestProcessServiceConfig{
+//        @Bean
+//        public QuestionDao questionDao(QuestionsResourceProps questionsResourceProps) {
+//            return new QuestionDaoCsv(new QuestionParserImpl(), questionsResourceProps);
+//        }
+        @Bean
+        public QuestionService questionService(QuestionDao questionDao) {
+            return new QuestionServiceImpl(questionDao);
+        }
+
+        @Bean
+        public TestDao testDao() {
+            return new TestDaoSimple();
+        }
+    }
     @Autowired
     private TestService testService;
     @MockBean

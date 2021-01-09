@@ -31,6 +31,7 @@ application:
         answerRepeatSelect: test.process.answer.repeatSelect
     process:
       messages:
+        start: test.process.messages.start
         comeback: test.process.messages.comeback
         error: test.error
     result:

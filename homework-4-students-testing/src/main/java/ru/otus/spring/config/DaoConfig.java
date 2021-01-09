@@ -9,7 +9,6 @@ import ru.otus.spring.dao.testing.QuestionDao;
 import ru.otus.spring.dao.testing.QuestionDaoCsv;
 import ru.otus.spring.dao.testing.TestDao;
 import ru.otus.spring.dao.testing.TestDaoSimple;
-import ru.otus.spring.service.i18n.LocalizationService;
 import ru.otus.spring.util.testing.QuestionParser;
 import ru.otus.spring.util.testing.QuestionParserImpl;
 
