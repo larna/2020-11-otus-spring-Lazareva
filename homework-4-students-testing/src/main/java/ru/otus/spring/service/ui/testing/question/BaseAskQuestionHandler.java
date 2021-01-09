@@ -2,7 +2,6 @@ package ru.otus.spring.service.ui.testing.question;
 
 import ru.otus.spring.config.props.AnswerQuestionProps;
 import ru.otus.spring.domain.testing.Question;
-import ru.otus.spring.service.i18n.LocalizationService;
 import ru.otus.spring.service.io.IOService;
 
 /**

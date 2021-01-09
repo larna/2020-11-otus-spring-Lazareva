@@ -3,18 +3,17 @@ package ru.otus.spring.dao.testing;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.otus.spring.config.QuestionDaoConfig;
-import ru.otus.spring.domain.testing.Question;
+import ru.otus.spring.config.props.QuestionsResourceProps;
 import ru.otus.spring.service.i18n.LocalizationService;
-import ru.otus.spring.util.testing.QuestionParser;
+import ru.otus.spring.util.testing.QuestionParserImpl;
 
 import java.util.Locale;
 
@@ -23,9 +22,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @DisplayName("Класс QuestionDaoCsv")
-@SpringBootTest(classes = QuestionDaoConfig.class)
+@SpringBootTest
 @ActiveProfiles("test")
 class QuestionDaoCsvTest {
+    @Configuration
+    @EnableConfigurationProperties(QuestionsResourceProps.class)
+    static class QuestionDaoCsvConfig{
+        @Bean
+        public QuestionDao questionDao(QuestionsResourceProps questionsResourceProps) {
+            return new QuestionDaoCsv(new QuestionParserImpl(), questionsResourceProps);
+        }
+    }
     @Autowired
     private QuestionDao questionDao;
     @MockBean

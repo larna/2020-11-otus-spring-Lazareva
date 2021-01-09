@@ -11,6 +11,6 @@ public interface LoginProcessService {
      * @return объект студент, если такой найден или выбрасывает исключение
      * @throws AccessDeniedException - выбрасывается, если студент не найден
      */
-    Person login() throws AccessDeniedException;
+    Person login(String userName) throws AccessDeniedException, IllegalFormatStudentNameException;
 }
 
