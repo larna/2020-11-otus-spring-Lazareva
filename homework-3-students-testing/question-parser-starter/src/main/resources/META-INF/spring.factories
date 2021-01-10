@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  ru.otus.spring.util.testing.QuestionParserAutoConfiguration
