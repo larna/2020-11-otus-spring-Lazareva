@@ -10,7 +10,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ActiveProfiles;
-import ru.otus.spring.config.QuestionDaoConfig;
 import ru.otus.spring.config.props.QuestionsResourceProps;
 import ru.otus.spring.service.i18n.LocalizationService;
 import ru.otus.spring.util.testing.QuestionParserImpl;
@@ -27,12 +26,13 @@ import static org.mockito.Mockito.when;
 class QuestionDaoCsvTest {
     @Configuration
     @EnableConfigurationProperties(QuestionsResourceProps.class)
-    static class QuestionDaoCsvConfig{
+    static class QuestionDaoCsvConfig {
         @Bean
         public QuestionDao questionDao(QuestionsResourceProps questionsResourceProps) {
             return new QuestionDaoCsv(new QuestionParserImpl(), questionsResourceProps);
         }
     }
+
     @Autowired
     private QuestionDao questionDao;
     @MockBean
