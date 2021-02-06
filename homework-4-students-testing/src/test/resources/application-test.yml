@@ -1,0 +1,68 @@
+application:
+  locale: en
+  accessibleLocales:
+    - ru
+    - en
+    - de
+  menu:
+    items:
+      - test.menuitem.text.test
+      - test.menuitem.text.exit
+      - test.menuitem.text.locale
+    commands:
+      exit: q
+      test: t
+    messages:
+      title: test.menu.title
+      unknownCommand: test.menu.text.unknownCommand
+      error: test.error
+  login:
+    messages:
+      invite: test.login.invite
+      wrongFormat: test.login.wrongFormat
+      accessDenied: test.login.accessDenied
+      error: test.error
+  test:
+    ask-questions:
+      input:
+        inviteToAnswer: test.process.answer.input
+      select:
+        inviteToAnswer: test.process.answer.select
+        answerRepeatSelect: test.process.answer.repeatSelect
+    process:
+      messages:
+        comeback: test.process.messages.comeback
+        alreadyExists: test.process.messages.testAlreadyExists
+        error: test.error
+    result:
+      messages:
+        header: test.result.header
+        failed: test.result.failed
+        done: test.result.done
+        answer: test.result.studentAnswer
+        answerRight: test.result.answer.right
+        answerWrong: test.result.answer.wrong
+        rightAnswersCount: test.result.rightStudentAnswerCount
+        rightAnswersNotDefined: test.result.rightAnswerNotDefined
+
+test:
+  pass:
+    percent: 80
+
+questions:
+  csv:
+    path: /
+    prefixFileName: test-questions
+
+logging:
+  level:
+    org.springframework: "info"
+    ru.otus.spring: "error"
+
+spring:
+  output:
+    ansi:
+      enabled: always
+  shell:
+    interactive:
+      enabled: false
