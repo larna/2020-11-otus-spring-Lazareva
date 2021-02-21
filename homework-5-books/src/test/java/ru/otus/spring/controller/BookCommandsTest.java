@@ -42,7 +42,7 @@ class BookCommandsTest {
     @MockBean
     private BookService bookService;
     @MockBean
-    private BooksViewConsoleTable booksVew;
+    private View<Book> booksVew;
     @Autowired
     private Shell shell;
 
