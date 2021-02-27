@@ -13,25 +13,25 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name="genres")
+@Table(name = "genres")
 public class Genre {
     /**
      * Идентификатор
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     @EqualsAndHashCode.Exclude
     private Long id;
     /**
      * Название жанра
      */
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
     /**
      * Книги жанра
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "genre", cascade = CascadeType.ALL )
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "genre", cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     private List<Book> books;
 }

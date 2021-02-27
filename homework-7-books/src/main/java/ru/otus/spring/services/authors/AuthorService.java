@@ -21,6 +21,7 @@ public interface AuthorService {
 
     /**
      * Удалить автора по id
+     *
      * @param authorId id автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
@@ -28,12 +29,15 @@ public interface AuthorService {
 
     /**
      * Найти всех авторов. По-страничный вывод.
+     *
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
     Page<Author> findAll(Pageable pageable);
+
     /**
      * Найти всех авторов по заданным id.
+     *
      * @param authorsId список id
      * @return список найденных авторов
      */
@@ -41,7 +45,8 @@ public interface AuthorService {
 
     /**
      * Найти авторов согласно фильтру
-     * @param filter фильтр
+     *
+     * @param filter   фильтр
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
@@ -49,6 +54,7 @@ public interface AuthorService {
 
     /**
      * Найти автора по id
+     *
      * @param authorId id автора
      * @return объект автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение

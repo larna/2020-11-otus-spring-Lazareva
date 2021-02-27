@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.shell.Shell;
 import org.springframework.test.context.ActiveProfiles;
-import ru.otus.spring.controller.dto.BookDto;
 import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
@@ -40,10 +39,10 @@ class BookCommandsTest {
     private CommentService commentService;
     @MockBean
     private EventsPublisher publisher;
-    @MockBean
+    @MockBean(name = "booksView")
     private View<Book> booksVew;
-    @MockBean
-    private View<BookDto> bookDtoView;
+    @MockBean(name = "bookWithCommentsView")
+    private View<Book> bookWithCommentsView;
     @Autowired
     private Shell shell;
 
@@ -252,12 +251,11 @@ class BookCommandsTest {
         Genre genre = Genre.builder().id(1L).name("Test").build();
         Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build();
 
-        given(bookDtoView.getObjectView(any(), any())).willReturn(expectedMessage);
-        given(bookService.findById(any())).willReturn(book);
+        given(bookWithCommentsView.getObjectView(any(), any())).willReturn(expectedMessage);
+        given(bookService.findAllInfoById(any())).willReturn(book);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findById(any());
-        Mockito.verify(commentService, Mockito.times(1)).findByBook(any());
+        Mockito.verify(bookService, Mockito.times(1)).findAllInfoById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 
@@ -270,11 +268,10 @@ class BookCommandsTest {
         Genre genre = Genre.builder().id(1L).name("Test").build();
         Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build();
 
-        given(bookService.findById(any())).willThrow(BookNotFoundException.class);
+        given(bookService.findAllInfoById(any())).willThrow(BookNotFoundException.class);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findById(any());
-        Mockito.verify(commentService, Mockito.times(0)).findByBook(any());
+        Mockito.verify(bookService, Mockito.times(1)).findAllInfoById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 }

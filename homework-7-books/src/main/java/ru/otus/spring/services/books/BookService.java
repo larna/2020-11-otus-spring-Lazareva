@@ -50,6 +50,7 @@ public interface BookService {
 
     /**
      * Найти книгу по isbn
+     *
      * @param isbn International Standard Book Number
      * @return найденную книгу
      * @throws BookNotFoundException если книга не найдена будет выброщено исключение
@@ -58,6 +59,7 @@ public interface BookService {
 
     /**
      * Найти книги по автору
+     *
      * @param author объект автор
      * @return список книг
      */
@@ -65,6 +67,7 @@ public interface BookService {
 
     /**
      * Найти все книги по жанру
+     *
      * @param genre объект жанр
      * @return список книг
      */
@@ -72,6 +75,7 @@ public interface BookService {
 
     /**
      * По-страничный поиск всех книг
+     *
      * @param pageable параметры по-страничного поиска
      * @return страница найденных книг
      */
@@ -79,9 +83,12 @@ public interface BookService {
 
     /**
      * По-страничный поиск книг по фильтру
-     * @param filter фильр
+     *
+     * @param filter   фильр
      * @param pageable параметры по-страничного поиска
      * @return страница найденных книг
      */
     Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable);
+
+    Book findAllInfoById(Long id);
 }

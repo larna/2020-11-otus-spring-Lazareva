@@ -4,7 +4,6 @@ import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.spring.controller.dto.BookDto;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
@@ -17,7 +16,7 @@ import java.util.Optional;
  */
 @Component("bookWithCommentsView")
 @RequiredArgsConstructor
-public class BookWithCommentsViewConsoleTable implements View<BookDto> {
+public class BookWithCommentsViewConsoleTable implements View<Book> {
     /**
      * Заголовок таблицы
      */
@@ -32,7 +31,7 @@ public class BookWithCommentsViewConsoleTable implements View<BookDto> {
      * @return
      */
     @Override
-    public String getListView(List<BookDto> books, String message) {
+    public String getListView(List<Book> books, String message) {
         throw new UnsupportedOperationException();
     }
 
@@ -44,11 +43,11 @@ public class BookWithCommentsViewConsoleTable implements View<BookDto> {
      * @return
      */
     @Override
-    public String getObjectView(BookDto bookWithComments, String message) {
+    public String getObjectView(Book bookWithComments, String message) {
         if (bookWithComments == null)
             throw new IllegalArgumentException("Для отображения автора передали нулевой объект");
         String bookOut = getBooksTable(List.of(bookWithComments)).render();
-        String commentOut = getCommentsTable(bookWithComments.getCommentList()).render();
+        String commentOut = getCommentsTable(bookWithComments.getComments()).render();
         return String.format("%s\n Комментарии книги:\n%s\n%s", bookOut, commentOut , message);
     }
 
@@ -58,7 +57,7 @@ public class BookWithCommentsViewConsoleTable implements View<BookDto> {
      * @param books
      * @return
      */
-    private AsciiTable getBooksTable(List<BookDto> books) {
+    private AsciiTable getBooksTable(List<Book> books) {
         final AsciiTable table = new AsciiTable();
         table.addRule();
         table.addRow(BOOK_TABLE_HEADER_ROW);
@@ -78,15 +77,15 @@ public class BookWithCommentsViewConsoleTable implements View<BookDto> {
      * @param book
      * @return
      */
-    private String[] bookToRow(BookDto book) {
-        String idCell = Long.valueOf(book.getBook().getId()).toString();
-        String name = book.getBook().getName();
-        String isbn = Optional.ofNullable(book.getBook().getIsbn()).orElse("-");
-        String authors = book.getBook().getAuthors().stream()
+    private String[] bookToRow(Book book) {
+        String idCell = Long.valueOf(book.getId()).toString();
+        String name = book.getName();
+        String isbn = Optional.ofNullable(book.getIsbn()).orElse("-");
+        String authors = book.getAuthors().stream()
                 .map(Author::getName)
                 .reduce((author1, author2) -> author1 + ", " + author2)
                 .orElse("Авторы для книги не найдены");
-        String genre = book.getBook().getGenre() == null ? "Жанр для книги не найден" : book.getBook().getGenre().getName();
+        String genre = book.getGenre() == null ? "Жанр для книги не найден" : book.getGenre().getName();
         return new String[]{idCell, name, isbn, authors, genre};
     }
 

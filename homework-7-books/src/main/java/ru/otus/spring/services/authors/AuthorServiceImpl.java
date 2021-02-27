@@ -27,12 +27,13 @@ public class AuthorServiceImpl implements AuthorService {
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Page<Author> findAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Author> findAllByIdIn(List<Long> authorsId) {
         return repository.findAllByIdIn(authorsId);
@@ -45,8 +46,8 @@ public class AuthorServiceImpl implements AuthorService {
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Page<Author> findAllByFilter(SearchFilter filter, Pageable pageable) {
         if (filter.isEmpty())
             return repository.findAll(pageable);
@@ -62,8 +63,8 @@ public class AuthorServiceImpl implements AuthorService {
      * @return объект автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Author findById(Long authorId) {
         return repository.findById(authorId).orElseThrow(AuthorNotFoundException::new);
     }
@@ -75,8 +76,8 @@ public class AuthorServiceImpl implements AuthorService {
      * @param name имя автора или его часть
      * @return список авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public List<Author> findByName(String name) {
         return repository.findAllByNameLike(name);
     }
@@ -87,8 +88,8 @@ public class AuthorServiceImpl implements AuthorService {
      * @param author объект автор
      * @return сохраненный автор
      */
-    @Override
     @Transactional
+    @Override
     public Author save(Author author) {
         return repository.save(author);
     }
@@ -99,8 +100,8 @@ public class AuthorServiceImpl implements AuthorService {
      * @param authorId id автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
-    @Override
     @Transactional
+    @Override
     public void deleteById(Long authorId) {
         if (!repository.existsById(authorId)) {
             throw new AuthorNotFoundException();

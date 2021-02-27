@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface AuthorRepository extends JpaRepository<Author, Long>, JpaSpecificationExecutor<Author> {
     List<Author> findAllByNameLike(String authorName);
+
     List<Author> findAllByIdIn(List<Long> idList);
 }

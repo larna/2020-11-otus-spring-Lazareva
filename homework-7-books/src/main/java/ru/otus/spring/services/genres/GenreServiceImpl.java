@@ -30,6 +30,7 @@ public class GenreServiceImpl implements GenreService {
         return repository.findAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Genre findById(Long id) {
         return repository.findById(id).orElseThrow(GenreNotFoundException::new);

@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Comment;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.repositories.BookRepository;
 import ru.otus.spring.repositories.BookSearchSpecification;
+import ru.otus.spring.repositories.CommentRepository;
 
 import java.util.List;
 
@@ -25,6 +27,8 @@ public class BookServiceImpl implements BookService {
      * Репозиторий для работы с книгами
      */
     private final BookRepository bookRepository;
+    private final CommentRepository commentRepository;
+
     /**
      * Сохранить книгу. Если идентиифкатор книги не задан или книги с таким идентиифкатором не существует,
      * то будет создана новая книга. В противном случае, книга будет отредактирована.
@@ -49,10 +53,10 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book updateBookName(Long bookId, String bookName) throws BookNotFoundException {
-        Book updatingBook = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
-        updatingBook.setName(bookName);
-        bookRepository.save(updatingBook);
-        return bookRepository.findBookById(updatingBook.getId());
+        if (!bookRepository.existsById(bookId))
+            throw new BookNotFoundException();
+        bookRepository.updateBookName(bookId, bookName);
+        return bookRepository.findBookById(bookId);
     }
 
     /**
@@ -149,5 +153,14 @@ public class BookServiceImpl implements BookService {
     public Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable) {
         Specification specification = (Specification) new BookSearchSpecification(filter);
         return bookRepository.findAll(specification, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Book findAllInfoById(Long id) {
+        Book bookWithAllInfo = bookRepository.findBookById(id);
+        List<Comment> comments = commentRepository.findAllByBook_Id(id);
+        bookWithAllInfo.setComments(comments);
+        return bookWithAllInfo;
     }
 }

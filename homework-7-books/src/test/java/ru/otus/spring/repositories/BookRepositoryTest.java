@@ -6,6 +6,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
@@ -14,6 +15,7 @@ import ru.otus.spring.domain.Genre;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -21,19 +23,27 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 class BookRepositoryTest {
     @Autowired
+    TestEntityManager em;
+    @Autowired
     private BookRepository repository;
 
     @DisplayName("Должен находить книгу с авторами и жанрами")
     @Test
     void shouldFindBookById() {
         Long bookId = 5L;
-        Genre genre = Genre.builder().id(3L).name("Приключения").build();
-        Author author = Author.builder().id(6L).name("Роберт Стивенсон").birthday(LocalDate.of(1850, 11, 13)).build();
-        Book expected = Book.builder().id(bookId).name("Остров сокровищ").genre(genre).authors(List.of(author)).build();
+        Book expected = em.find(Book.class, bookId);
         Book actual = repository.findBookById(bookId);
-        assertAll(() -> assertEquals(expected, actual),
-                ()->assertEquals(genre, actual.getGenre()),
-                ()->assertTrue(actual.getAuthors().contains(author)));
+        assertThat(actual).isNotNull().isEqualTo(expected);
+    }
+    @DisplayName("Должен изменять название книги")
+    @Test
+    void shouldUpdateBookNameById() {
+        final Long bookId = 5L;
+        final String expectedBookName = "Test";
+
+        repository.updateBookName(bookId, expectedBookName);
+        Book actual = em.find(Book.class, bookId);
+        assertThat(actual).isNotNull().hasFieldOrPropertyWithValue("name",expectedBookName);
     }
 
 }

@@ -48,7 +48,7 @@ public class Author {
     /**
      * Книги автора
      */
-    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @EqualsAndHashCode.Exclude
     private List<Book> books;
 

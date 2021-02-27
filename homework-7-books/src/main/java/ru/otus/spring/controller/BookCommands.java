@@ -7,12 +7,10 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.spring.controller.dto.BookDto;
 import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
-import ru.otus.spring.domain.Comment;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.services.books.BookNotFoundException;
 import ru.otus.spring.services.books.BookService;
@@ -45,18 +43,18 @@ public class BookCommands {
      * Отображение книг пользователю
      */
     private final View<Book> booksView;
-    private final View<BookDto> bookDtoView;
+    private final View<Book> bookWithCommentsView;
 
     public BookCommands(EventsPublisher eventsPublisher,
                         BookService bookService,
                         CommentService commentService,
                         @Qualifier("booksView") View<Book> booksView,
-                        @Qualifier("bookWithCommentsView") View<BookDto> bookDtoView) {
+                        @Qualifier("bookWithCommentsView") View<Book> bookWithCommentsView) {
         this.eventsPublisher = eventsPublisher;
         this.bookService = bookService;
         this.commentService = commentService;
         this.booksView = booksView;
-        this.bookDtoView = bookDtoView;
+        this.bookWithCommentsView = bookWithCommentsView;
     }
 
     /**
@@ -185,10 +183,8 @@ public class BookCommands {
     @ShellMethod(key = {"b?id", "book-by-id"}, value = "Find book by id")
     public String findBook(@ShellOption(value = {"-id"}, help = "Id of book") Long bookId) {
         try {
-            Book book = bookService.findById(bookId);
-            List<Comment> comments = commentService.findByBook(book.getId());
-            BookDto bookDto = new BookDto(book, comments);
-            return bookDtoView.getObjectView(bookDto, "Книга успешно найдена");
+            Book book = bookService.findAllInfoById(bookId);
+            return bookWithCommentsView.getObjectView(book, "Книга успешно найдена");
         } catch (BookNotFoundException e) {
             return "Книга c id=" + bookId + " не найдена";
         }

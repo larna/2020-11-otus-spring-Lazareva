@@ -16,4 +16,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     @EntityGraph(attributePaths = {"book"})
     List<Comment> findAll();
 
+    @EntityGraph(attributePaths = {"book"})
+    Comment findCommentById(Long id);
+
 }

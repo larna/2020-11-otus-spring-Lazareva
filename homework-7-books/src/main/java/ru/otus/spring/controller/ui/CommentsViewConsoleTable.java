@@ -4,13 +4,9 @@ import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.spring.controller.dto.BookDto;
-import ru.otus.spring.domain.Author;
-import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Представление для отображения комментариев
