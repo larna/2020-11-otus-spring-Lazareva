@@ -7,12 +7,14 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.services.books.BookNotFoundException;
 import ru.otus.spring.services.books.BookService;
+import ru.otus.spring.services.comments.CommentService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +30,7 @@ public class BookCommands {
      * Значения размера страницы по-умолчанию
      */
     private static final String DEFAULT_PARAM_PAGE_SIZE = "10";
+    private final EventsPublisher eventsPublisher;
     /**
      * Сервис для работы с книгами
      */
@@ -36,11 +39,17 @@ public class BookCommands {
      * Отображение книг пользователю
      */
     private final View<Book> booksView;
+    private final View<Book> bookWithCommentView;
 
-    public BookCommands(BookService bookService,
-                        @Qualifier("booksView") View<Book> booksView) {
+    public BookCommands(EventsPublisher eventsPublisher,
+                        BookService bookService,
+                        CommentService commentService,
+                        @Qualifier("booksView") View<Book> booksView,
+                        @Qualifier("bookWithCommentsView") View<Book> bookWithCommentView) {
+        this.eventsPublisher = eventsPublisher;
         this.bookService = bookService;
         this.booksView = booksView;
+        this.bookWithCommentView = bookWithCommentView;
     }
 
     /**
@@ -73,19 +82,20 @@ public class BookCommands {
                           @ShellOption(value = {"-i", "-isbn"}, help = "Isbn of book", defaultValue = "") String isbn,
                           @ShellOption(value = {"-g", "-genre"}, help = "Genre id of book") Long genreId,
                           @ShellOption(value = {"-a", "-authors"}, help = "Comma separated author's id") String authorsId) {
-        List<Author> authors;
         try {
-            authors = Arrays.stream(authorsId.split(","))
-                    .map(Long::parseLong)
-                    .map(Author::of)
-                    .collect(Collectors.toList());
+            List<Author> authors = getAuthorsFromParameter(authorsId);
+            Genre genre = Genre.builder().id(genreId).build();
+            Book book = Book.builder()
+                    .name(bookName)
+                    .isbn(isbn)
+                    .genre(genre)
+                    .authors(authors)
+                    .build();
+            Book createdBook = bookService.save(book);
+            Book bookWithAllInfo = bookService.findById(createdBook.getId());
+            return booksView.getObjectView(bookWithAllInfo, "Книга успешно добавлена");
         } catch (NumberFormatException e) {
             return "Идентификатор автора должен быть числовым!";
-        }
-        Book book = new Book(null, bookName, isbn, Genre.of(genreId), authors);
-        try {
-            Book createdBook = bookService.save(book);
-            return booksView.getObjectView(createdBook, "Книга успешно добавлена");
         } catch (Exception e) {
             return "Книгу не удалось добавить. Проверьте есть ли выбранный вами жанр или авторы...";
         }
@@ -107,22 +117,22 @@ public class BookCommands {
                              @ShellOption(value = {"-i", "-isbn"}, help = "Isbn of book", defaultValue = "") String isbn,
                              @ShellOption(value = {"-g", "-genre"}, help = "Genre id of book") Long genreId,
                              @ShellOption(value = {"-a", "-authors"}, help = "Comma separated author's id") String authorsId) {
-        List<Author> authors;
+
         try {
-            authors = Arrays.stream(authorsId.split(","))
-                    .map(Long::parseLong)
-                    .map(Author::of)
-                    .collect(Collectors.toList());
+            List<Author> authors = getAuthorsFromParameter(authorsId);
+            Genre genre = Genre.builder().id(genreId).build();
+            Book book = Book.builder()
+                    .id(bookId)
+                    .name(bookName)
+                    .isbn(isbn)
+                    .genre(genre)
+                    .authors(authors)
+                    .build();
+            eventsPublisher.publish(book);
         } catch (NumberFormatException e) {
             return "Идентификатор автора должен быть числовым!";
         }
-        Book book = new Book(bookId, bookName, isbn, Genre.of(genreId), authors);
-        try {
-            Book createdBook = bookService.save(book);
-            return booksView.getObjectView(createdBook, "Книга успешно изменена");
-        } catch (Exception e) {
-            return "Книгу не удалось изменить. Проверьте есть ли выбранный вами жанр или авторы...";
-        }
+        return "";
     }
 
     /**
@@ -168,8 +178,8 @@ public class BookCommands {
     @ShellMethod(key = {"b?id", "book-by-id"}, value = "Find book by id")
     public String findBook(@ShellOption(value = {"-id"}, help = "Id of book") Long bookId) {
         try {
-            Book book = bookService.findById(bookId);
-            return booksView.getObjectView(book, "Книга успешно найдена");
+            Book book = bookService.findBookWithAllInfoById(bookId);
+            return bookWithCommentView.getObjectView(book, "Книга успешно найдена");
         } catch (BookNotFoundException e) {
             return "Книга c id=" + bookId + " не найдена";
         }
@@ -212,5 +222,12 @@ public class BookCommands {
 
         String message = String.format("Показано %d из %d книг", books.getNumberOfElements(), books.getTotalElements());
         return booksView.getListView(books.getContent(), message);
+    }
+
+    private List<Author> getAuthorsFromParameter(String authorsIdString) {
+        return Arrays.stream(authorsIdString.split(","))
+                .map(Long::parseLong)
+                .map(id -> Author.builder().id(id).build())
+                .collect(Collectors.toList());
     }
 }

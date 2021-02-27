@@ -1,4 +1,4 @@
-package ru.otus.spring.controller.dto;
+package ru.otus.spring.controller;
 
 import ru.otus.spring.services.authors.AuthorServiceException;
 

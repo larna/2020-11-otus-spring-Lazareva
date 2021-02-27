@@ -1,16 +1,21 @@
 package ru.otus.spring.services.books;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
-import ru.otus.spring.repositories.books.BookRepository;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Comment;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.repositories.books.BookSearchSpecification;
+import ru.otus.spring.repositories.BookRepository;
+import ru.otus.spring.repositories.BookSearchSpecification;
+import ru.otus.spring.repositories.CommentRepository;
+import ru.otus.spring.services.comments.CommentService;
 
 import java.util.List;
 
@@ -24,6 +29,7 @@ public class BookServiceImpl implements BookService {
      * Репозиторий для работы с книгами
      */
     private final BookRepository bookRepository;
+    private final CommentRepository commentRepository;
 
     /**
      * Сохранить книгу. Если идентиифкатор книги не задан или книги с таким идентиифкатором не существует,
@@ -35,9 +41,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book save(Book book) {
-        if (book.getId() == null || !bookRepository.isExistsById(book.getId()))
-            return bookRepository.insert(book);
-        return bookRepository.update(book);
+        return bookRepository.save(book);
     }
 
     /**
@@ -51,9 +55,9 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book updateBookName(Long bookId, String bookName) throws BookNotFoundException {
-        Book oldBook = findById(bookId);
-        Book updatingBook = new Book(bookId, bookName, oldBook.getIsbn(), oldBook.getGenre(), oldBook.getAuthors());
-        return save(updatingBook);
+        if (!bookRepository.existsById(bookId))
+            throw new BookNotFoundException();
+        return bookRepository.updateBookName(bookId, bookName);
     }
 
     /**
@@ -65,10 +69,8 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public void delete(Long bookId) throws BookNotFoundException {
-        if (!bookRepository.isExistsById(bookId))
-            throw new BookNotFoundException();
-
-        bookRepository.delete(bookId);
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookRepository.delete(book);
     }
 
     /**
@@ -81,10 +83,9 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public Book findById(Long bookId) throws BookNotFoundException {
-        if (!bookRepository.isExistsById(bookId))
+        if (!bookRepository.existsById(bookId))
             throw new BookNotFoundException();
-
-        return bookRepository.getById(bookId);
+        return bookRepository.findBookById(bookId);
     }
 
     /**
@@ -97,10 +98,10 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public Book findByIsbn(String isbn) throws BookNotFoundException {
-        if (!bookRepository.isExistsByIsbn(isbn))
+        if (!bookRepository.existsBookByIsbn(isbn))
             throw new BookNotFoundException();
 
-        return bookRepository.getByIsbn(isbn);
+        return bookRepository.findBookByIsbn(isbn);
     }
 
     /**
@@ -112,7 +113,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public List<Book> findByAuthor(Author author) {
-        return bookRepository.getAllByAuthor(author);
+        return bookRepository.findAllByAuthorsIs(author);
     }
 
     /**
@@ -124,7 +125,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public List<Book> findByGenre(Genre genre) {
-        return bookRepository.getAllByGenre(genre);
+        return bookRepository.findAllByGenre(genre);
     }
 
     /**
@@ -136,7 +137,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public Page<Book> findAll(Pageable pageable) {
-        return bookRepository.getAll(pageable);
+        return bookRepository.findAll(pageable);
     }
 
     /**
@@ -150,8 +151,22 @@ public class BookServiceImpl implements BookService {
     @Override
     public Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable) {
         BookSearchSpecification specification = new BookSearchSpecification(filter);
-        if (specification.isSatisfiedBy())
-            return bookRepository.getAll(specification, pageable);
-        return bookRepository.getAll(pageable);
+        return bookRepository.findAll(specification, pageable);
+    }
+
+    /**
+     * Получить книгу со всей информацией включая комментарии
+     *
+     * @param bookId
+     * @return
+     * @throws BookNotFoundException
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Book findBookWithAllInfoById(Long bookId) throws BookNotFoundException {
+        Book book = bookRepository.findBookById(bookId);
+        List<Comment> comments = commentRepository.findAllByBook_Id(bookId);
+        book.setComments(comments);
+        return book;
     }
 }

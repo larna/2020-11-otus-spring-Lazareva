@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.repositories.genre.GenreRepository;
+import ru.otus.spring.repositories.GenreRepository;
 
 import java.util.List;
 
@@ -27,6 +27,12 @@ public class GenreServiceImpl implements GenreService {
     @Transactional(readOnly = true)
     @Override
     public List<Genre> findAll() {
-        return repository.getAll();
+        return repository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Genre findById(Long id) {
+        return repository.findById(id).orElseThrow(GenreNotFoundException::new);
     }
 }

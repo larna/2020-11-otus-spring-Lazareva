@@ -2,24 +2,36 @@ package ru.otus.spring.domain;
 
 import lombok.*;
 
+import javax.persistence.*;
+import java.util.List;
+
 /**
  * Класс, описывающий жанры
  */
-@Getter
-@RequiredArgsConstructor
-@ToString
-@EqualsAndHashCode
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name="genres")
 public class Genre {
     /**
      * Идентификатор
      */
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
+    @EqualsAndHashCode.Exclude
+    private Long id;
     /**
      * Название жанра
      */
-    private final String name;
-
-    public static Genre of(Long genreId) {
-        return new Genre(genreId, null);
-    }
+    @Column(name="name", nullable = false, unique = true)
+    private String name;
+    /**
+     * Книги жанра
+     */
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "genre", cascade = CascadeType.ALL )
+    @EqualsAndHashCode.Exclude
+    private List<Book> books;
 }

@@ -4,11 +4,11 @@ import de.vandermeer.asciitable.AsciiTable;
 import de.vandermeer.asciitable.CWC_LongestWordMin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.otus.spring.controller.dto.AuthorDto;
 import ru.otus.spring.domain.Author;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Представление авторов для пользователя
@@ -16,10 +16,13 @@ import java.util.stream.Collectors;
 @Component("authorsView")
 @RequiredArgsConstructor
 public class AuthorsViewConsoleTable implements View<Author> {
+    private static final String DATE_FORMAT = "dd.MM.yyyy";
+    private static final String DEFAULT_EMPTY_VALUE = "-";
     private static final String[] TABLE_HEADER_ROW = new String[]{"ID", "Имя", "Настоящее имя, если автор издается под псевдонимом", "Дата рождения"};
 
     /**
      * Отображение списка авторов
+     *
      * @param authors авторы
      * @param message сообщение
      * @return
@@ -29,16 +32,14 @@ public class AuthorsViewConsoleTable implements View<Author> {
         if (authors == null || authors.size() == 0)
             return "Авторы не найдены...";
 
-        List<AuthorDto> authorList = authors.stream()
-                .map(AuthorDto::toDto)
-                .collect(Collectors.toList());
-
-        String result = getAuthorsTable(authorList).render();
+        String result = getAuthorsTable(authors).render();
         return String.format("%s\n %s\n", result, message);
     }
+
     /**
      * Отображение объекта в виде таблицы с заголовком и содержащим единственную строку с информацией из переданного объекта
-     * @param author объект автора для отображения
+     *
+     * @param author  объект автора для отображения
      * @param message сообщение пользователю
      * @return
      */
@@ -51,10 +52,11 @@ public class AuthorsViewConsoleTable implements View<Author> {
 
     /**
      * Создание и настройка таблицы
+     *
      * @param authors список авторов
      * @return
      */
-    private AsciiTable getAuthorsTable(List<AuthorDto> authors) {
+    private AsciiTable getAuthorsTable(List<Author> authors) {
         final AsciiTable table = new AsciiTable();
         table.addRule();
         table.addRow(TABLE_HEADER_ROW);
@@ -70,14 +72,27 @@ public class AuthorsViewConsoleTable implements View<Author> {
 
     /**
      * Отображение автора в строку таблицы
+     *
      * @param author объект автор
      * @return
      */
-    private String[] authorToRow(AuthorDto author) {
+    private String[] authorToRow(Author author) {
         String idCell = author.getId().toString();
         String name = author.getName();
         String realName = author.getRealName() == null ? "" : author.getRealName();
-        String birthdayCell = author.getBirthday();
+        String birthdayCell = birthdayToString(author.getBirthday());
         return new String[]{idCell, name, realName, birthdayCell};
+    }
+
+    /**
+     * Преобразование дня рождения в строку
+     *
+     * @param date
+     * @return
+     */
+    private String birthdayToString(LocalDate date) {
+        if (date == null)
+            return DEFAULT_EMPTY_VALUE;
+        return date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 }

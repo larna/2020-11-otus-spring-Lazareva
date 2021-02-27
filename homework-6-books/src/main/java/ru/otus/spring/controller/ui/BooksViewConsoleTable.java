@@ -78,7 +78,7 @@ public class BooksViewConsoleTable implements View<Book> {
      * @return
      */
     private String[] bookToRow(Book book) {
-        String idCell = book.getId().toString();
+        String idCell = Long.valueOf(book.getId()).toString();
         String name = book.getName();
         String isbn = Optional.ofNullable(book.getIsbn()).orElse("-");
         String authors = book.getAuthors().stream()

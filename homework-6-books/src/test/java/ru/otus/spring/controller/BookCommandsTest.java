@@ -7,31 +7,25 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.shell.Shell;
-import org.springframework.shell.standard.ShellMethod;
-import org.springframework.shell.standard.ShellOption;
 import org.springframework.test.context.ActiveProfiles;
-import ru.otus.spring.controller.ui.BooksViewConsoleTable;
+import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
-import ru.otus.spring.repositories.books.BookRepository;
 import ru.otus.spring.services.books.BookNotFoundException;
 import ru.otus.spring.services.books.BookService;
+import ru.otus.spring.services.comments.CommentService;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -42,7 +36,12 @@ class BookCommandsTest {
     @MockBean
     private BookService bookService;
     @MockBean
+    private EventsPublisher publisher;
+    @MockBean(name="booksView")
     private View<Book> booksVew;
+    @MockBean(name="bookWithCommentsView")
+    private View<Book> bookWithCommentsVew;
+
     @Autowired
     private Shell shell;
 
@@ -58,8 +57,9 @@ class BookCommandsTest {
     })
     void shouldCreateBook(String command) {
         final String expectedMessage = "Книга успешно добавлена";
-        Book book = new Book(1L, "Test", null, new Genre(1L, "Test"),
-                List.of(new Author(1L, "Test", "Test", LocalDate.now())));
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Author author = Author.builder().id(1L).name("Test").birthday(LocalDate.now()).build();
+        Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of(author)).build();
 
         given(bookService.save(any())).willReturn(book);
         given(booksVew.getObjectView(any(), any())).willReturn(expectedMessage);
@@ -100,26 +100,12 @@ class BookCommandsTest {
     })
     void shouldUpdateBook(String command) {
         final String expectedMessage = "Книга успешно изменена";
-        Book book = new Book(1L, "Test", null, new Genre(1L, "Test"),
-                List.of(new Author(1L, "Test", "Test", LocalDate.now())));
-
-        given(bookService.save(any())).willReturn(book);
-        given(booksVew.getObjectView(any(), any())).willReturn(expectedMessage);
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Author author = Author.builder().id(1L).name("Test").birthday(LocalDate.now()).build();
+        Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of(author)).build();
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).save(any());
-        assertThat(actual).isEqualTo(expectedMessage);
-    }
-
-    @DisplayName("При обновлении должен выводить сообщение об ошибке, если автора или жанра не существует")
-    @ParameterizedTest
-    @CsvSource(value = {"book-update -id 1 -n Test -g 1 -a 1", "bu -id 1 -n Test -g 1 -a 1"})
-    void shouldUpdateShowMessageErrorIfAuthorOrGenreNotExists(String command) {
-        final String expectedMessage = "Книгу не удалось изменить. Проверьте есть ли выбранный вами жанр или авторы...";
-        given(bookService.save(any())).willThrow(BookNotFoundException.class);
-        Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).save(any());
-        assertThat(actual).isEqualTo(expectedMessage);
+        Mockito.verify(publisher, Mockito.times(1)).publish(any());
     }
 
     @DisplayName("При обновлении должен выводить сообщение об ошибке, если id автора задан неверно")
@@ -128,7 +114,7 @@ class BookCommandsTest {
     void shouldUpdateShowMessageErrorIfAuthorIsNotNumber(String command) {
         final String expectedMessage = "Идентификатор автора должен быть числовым!";
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(0)).save(any());
+        Mockito.verify(publisher, Mockito.times(0)).publish(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 
@@ -137,8 +123,9 @@ class BookCommandsTest {
     @CsvSource(value = {"book-update-name 10 -n Test", "bun 10 -n Test"})
     void shouldUpdateBookName(String command) {
         final String expectedMessage = "Книга успешно изменена";
-        Book book = new Book(1L, "Test", null, new Genre(1L, "Test"),
-                List.of(new Author(1L, "Test", "Test", LocalDate.now())));
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Author author = Author.builder().id(1L).name("Test").birthday(LocalDate.now()).build();
+        Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of(author)).build();
 
         given(bookService.updateBookName(any(), any())).willReturn(book);
         given(booksVew.getObjectView(any(), any())).willReturn(expectedMessage);
@@ -185,7 +172,8 @@ class BookCommandsTest {
     @Test
     void shouldFindAllBooks() {
         final String expectedMessage = "Все книги";
-        Page<Book> page = new PageImpl<>(List.of(new Book(1L, "Test", null, new Genre(1L, "Test"), List.of())));
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Page<Book> page = new PageImpl<>(List.of(Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build()));
 
         given(booksVew.getListView(any(), any())).willReturn(expectedMessage);
         given(bookService.findAll(any())).willReturn(page);
@@ -243,7 +231,8 @@ class BookCommandsTest {
     @Test
     void shouldCorrectFindBooks() {
         final String expectedMessage = "Книги найдены";
-        Page<Book> page = new PageImpl<>(List.of(new Book(1L, "Test", null, new Genre(1L, "Test"), List.of())));
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Page<Book> page = new PageImpl<>(List.of(Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build()));
 
         given(booksVew.getListView(any(), any())).willReturn(expectedMessage);
         given(bookService.findAllByFilter(any(), any())).willReturn(page);
@@ -258,13 +247,14 @@ class BookCommandsTest {
     @CsvSource(value = {"b?id 1", "book-by-id 1", "b?id -id 1", "book-by-id -id 1"})
     void shouldCorrectFindBookById(String command) {
         final String expectedMessage = "Книга успешно найдена";
-        Book book = new Book(1L, "Test", null, new Genre(1L, "Test"), List.of());
+        Genre genre = Genre.builder().id(1L).name("Test").build();
+        Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build();
 
-        given(booksVew.getObjectView(any(), any())).willReturn(expectedMessage);
-        given(bookService.findById(any())).willReturn(book);
+        given(bookWithCommentsVew.getObjectView(any(), any())).willReturn(expectedMessage);
+        given(bookService.findBookWithAllInfoById(any())).willReturn(book);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findById(any());
+        Mockito.verify(bookService, Mockito.times(1)).findBookWithAllInfoById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 
@@ -273,13 +263,10 @@ class BookCommandsTest {
     @CsvSource(value = {"b?id 1", "book-by-id 1"})
     void shouldFindBookByIdShowErrorMessage(String command) {
         final String expectedMessage = "Книга c id=1 не найдена";
-        final Long bookId = 1L;
-        Book book = new Book(bookId, "Test", null, new Genre(1L, "Test"), List.of());
-
-        given(bookService.findById(any())).willThrow(BookNotFoundException.class);
+        given(bookService.findBookWithAllInfoById(any())).willThrow(BookNotFoundException.class);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findById(any());
+        Mockito.verify(bookService, Mockito.times(1)).findBookWithAllInfoById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 }

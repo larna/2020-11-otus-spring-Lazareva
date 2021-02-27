@@ -7,12 +7,15 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.spring.controller.dto.AuthorDto;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.services.authors.AuthorNotFoundException;
 import ru.otus.spring.services.authors.AuthorService;
 import ru.otus.spring.services.authors.AuthorServiceException;
 import ru.otus.spring.controller.ui.View;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * Компонент, обслуживающий работу интерфейса с авторами
@@ -20,6 +23,10 @@ import ru.otus.spring.controller.ui.View;
 @ShellComponent
 @ShellCommandGroup("author")
 public class AuthorCommands {
+    /**
+     * формат даты
+     */
+    private static final String DATE_FORMAT = "dd.MM.yyyy";
     /**
      * Значения размера страницы по-умолчанию
      */
@@ -40,6 +47,7 @@ public class AuthorCommands {
 
     /**
      * По-страничный вывод авторов
+     *
      * @param page страница
      * @param size размер страницы
      * @return
@@ -55,7 +63,8 @@ public class AuthorCommands {
 
     /**
      * Добавить автора
-     * @param name имя автора
+     *
+     * @param name     имя автора
      * @param realName настоящее имя автора
      * @param birthday день рождения
      * @return
@@ -68,7 +77,12 @@ public class AuthorCommands {
         if (name == null || name.isEmpty())
             return "Добавление невозможно. Имя автора не должно быть пустым!";
         try {
-            Author author = authorService.save(AuthorDto.toDomain(name, realName, birthday));
+            Author author = Author.builder()
+                    .name(name)
+                    .realName(realName)
+                    .birthday(birthdayStringToDate(birthday))
+                    .build();
+            authorService.save(author);
             return authorsView.getObjectView(author, "Автор успешно добавлен");
         } catch (AuthorServiceException e) {
             return e.getMessage();
@@ -77,11 +91,12 @@ public class AuthorCommands {
 
     /**
      * Найти авторов по введенным критериям. Критерии между собой объендиняются по И, поиск производиться с помощью like.
+     *
      * @param authorName имя автора
-     * @param genreName название жанра
-     * @param bookName название книги
-     * @param page страница
-     * @param size размер страницы
+     * @param genreName  название жанра
+     * @param bookName   название книги
+     * @param page       страница
+     * @param size       размер страницы
      * @return
      */
     @ShellMethod(key = {"a?", "author-find"}, value = "Find authors")
@@ -101,6 +116,7 @@ public class AuthorCommands {
 
     /**
      * Удалить автора
+     *
      * @param id идентиифкатор автора
      * @return
      */
@@ -112,7 +128,7 @@ public class AuthorCommands {
             authorService.deleteById(id);
         } catch (AuthorNotFoundException e) {
             return "Автор не найден";
-        }catch (Exception e){
+        } catch (Exception e) {
             return "Автора не удалось удалить";
         }
         return "Автор успешно удален";
@@ -120,14 +136,25 @@ public class AuthorCommands {
 
     /**
      * Показать страницу авторов пользователю
+     *
      * @param authors страница авторов
      * @return
      */
-    private String showAuthorsPage(Page<Author> authors){
+    private String showAuthorsPage(Page<Author> authors) {
         if (authors.isEmpty())
             return "Авторы не найдены";
 
         String message = String.format("Всего авторов: %d. Показано: %d ", authors.getTotalElements(), authors.getNumberOfElements());
         return authorsView.getListView(authors.getContent(), message);
+    }
+
+    private static LocalDate birthdayStringToDate(String birthday) {
+        if (birthday == null || birthday.isEmpty())
+            return null;
+        try {
+            return LocalDate.parse(birthday, DateTimeFormatter.ofPattern(DATE_FORMAT));
+        } catch (DateTimeParseException e) {
+            throw new BirthdayFormatException();
+        }
     }
 }

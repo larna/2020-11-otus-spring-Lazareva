@@ -3,12 +3,13 @@ package ru.otus.spring.services.authors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
-import ru.otus.spring.repositories.authors.AuthorRepository;
-import ru.otus.spring.repositories.authors.AuthorSearchSpecification;
+import ru.otus.spring.repositories.AuthorRepository;
 import ru.otus.spring.domain.Author;
+import ru.otus.spring.repositories.AuthorSearchSpecification;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class AuthorServiceImpl implements AuthorService {
-    private final AuthorRepository authorDao;
+    private final AuthorRepository repository;
 
     /**
      * Найти всех авторов. По-страничный вывод.
@@ -26,10 +27,16 @@ public class AuthorServiceImpl implements AuthorService {
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Page<Author> findAll(Pageable pageable) {
-        return authorDao.getAll(pageable);
+        return repository.findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Author> findAllByIdIn(List<Long> authorsId) {
+        return repository.findAllByIdIn(authorsId);
     }
 
     /**
@@ -39,14 +46,13 @@ public class AuthorServiceImpl implements AuthorService {
      * @param pageable параметры по-страничного вывода
      * @return страница найденных авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Page<Author> findAllByFilter(SearchFilter filter, Pageable pageable) {
         AuthorSearchSpecification spec = new AuthorSearchSpecification(filter);
-        if (spec.isSatisfiedBy())
-            return authorDao.getAllByFilter(spec, pageable);
-        else
-            return findAll(pageable);
+        if (!spec.isSatisfied())
+            return repository.findAll(pageable);
+        return repository.findAll(spec, pageable);
     }
 
     /**
@@ -56,12 +62,10 @@ public class AuthorServiceImpl implements AuthorService {
      * @return объект автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public Author findById(Long authorId) {
-        if (authorDao.isExists(authorId))
-            return authorDao.getAuthorById(authorId);
-        throw new AuthorNotFoundException();
+        return repository.findById(authorId).orElseThrow(AuthorNotFoundException::new);
     }
 
     /**
@@ -71,10 +75,10 @@ public class AuthorServiceImpl implements AuthorService {
      * @param name имя автора или его часть
      * @return список авторов
      */
-    @Override
     @Transactional(readOnly = true)
+    @Override
     public List<Author> findByName(String name) {
-        return authorDao.getAuthorByLikeName(name);
+        return repository.findAllByNameLike(name);
     }
 
     /**
@@ -83,12 +87,10 @@ public class AuthorServiceImpl implements AuthorService {
      * @param author объект автор
      * @return сохраненный автор
      */
-    @Override
     @Transactional
+    @Override
     public Author save(Author author) {
-        if (author.getId() == null)
-            return authorDao.insert(author);
-        return authorDao.update(author);
+        return repository.save(author);
     }
 
     /**
@@ -97,12 +99,12 @@ public class AuthorServiceImpl implements AuthorService {
      * @param authorId id автора
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
-    @Override
     @Transactional
+    @Override
     public void deleteById(Long authorId) {
-        if (!authorDao.isExists(authorId)) {
+        if (!repository.existsById(authorId)) {
             throw new AuthorNotFoundException();
         }
-        authorDao.delete(authorId);
+        repository.deleteById(authorId);
     }
 }

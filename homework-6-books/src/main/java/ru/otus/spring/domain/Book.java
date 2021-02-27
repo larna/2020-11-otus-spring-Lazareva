@@ -1,36 +1,67 @@
 package ru.otus.spring.domain;
 
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Класс для описания книги
  */
-@Getter
-@ToString
-@EqualsAndHashCode
-@RequiredArgsConstructor
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "books")
+@NamedEntityGraph(name = "books-genre-authors-entity-graph",
+        attributeNodes = {@NamedAttributeNode("genre"), @NamedAttributeNode("authors")})
 public class Book {
     /**
      * Идентификатор
      */
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @EqualsAndHashCode.Exclude
+    private Long id;
     /**
      * Название книги
      */
-    private final @NonNull String name;
+    @Column(name = "name", nullable = false)
+    private String name;
     /**
      * International Standard Book Number
      */
-    private final String isbn;
+    @Column(name = "isbn", unique = true)
+    private String isbn;
     /**
      * Жанр
      */
-    private final @NonNull Genre genre;
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "genre_id", referencedColumnName = "id")
+    private Genre genre;
     /**
      * Авторы
      */
-    private final @NonNull List<Author> authors;
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinTable(name = "books_authors",
+            joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"))
+    private List<Author> authors;
+
+    @Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    private List<Comment> comments;
 }

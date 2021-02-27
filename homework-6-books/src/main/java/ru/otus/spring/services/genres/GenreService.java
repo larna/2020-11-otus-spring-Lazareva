@@ -14,4 +14,5 @@ public interface GenreService {
      * @return список жанров
      */
     List<Genre> findAll();
+    Genre findById(Long id);
 }

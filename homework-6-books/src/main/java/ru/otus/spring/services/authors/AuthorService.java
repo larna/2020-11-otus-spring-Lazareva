@@ -32,6 +32,12 @@ public interface AuthorService {
      * @return страница найденных авторов
      */
     Page<Author> findAll(Pageable pageable);
+    /**
+     * Найти всех авторов по заданным id.
+     * @param authorsId список id
+     * @return список найденных авторов
+     */
+    List<Author> findAllByIdIn(List<Long> authorsId);
 
     /**
      * Найти авторов согласно фильтру

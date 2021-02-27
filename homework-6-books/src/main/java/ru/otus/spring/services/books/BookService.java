@@ -84,4 +84,12 @@ public interface BookService {
      * @return страница найденных книг
      */
     Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable);
+
+    /**
+     * Получить книгу со всей информацией включая комментарии
+     * @param bookId
+     * @return
+     * @throws BookNotFoundException
+     */
+    Book findBookWithAllInfoById(Long bookId) throws BookNotFoundException;
 }

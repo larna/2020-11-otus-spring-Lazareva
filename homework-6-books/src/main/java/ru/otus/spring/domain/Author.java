@@ -1,26 +1,36 @@
 package ru.otus.spring.domain;
 
 import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Класс описывающий авторов книг
  */
-@EqualsAndHashCode
-@Getter
-@Setter
-@ToString
-@RequiredArgsConstructor
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "authors")
 public class Author {
     /**
      * идентификатор
      */
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    @EqualsAndHashCode.Exclude
+    private Long id;
     /**
      * Имя автора
      */
-    private final String name;
+    @Column(name = "name", nullable = false)
+    private String name;
     /**
      * Реальное имя автора, если известно конечно:)
      * По этому имени нет смысла искать, оно может храниться больше для интереса, потому что оно будет явно,
@@ -29,19 +39,17 @@ public class Author {
      * типа RealAuthorData, потому что и дата рождения и даже пол автора могут быть вымышлены,
      * взять например: Жорж Санд.
      */
-    private final String realName;
+    @Column(name = "real_name")
+    private String realName;
     /**
      * Дата рождения
      */
-    private final LocalDate birthday;
-
-    public static Author of(Long id){
-        return new Author(id, null, null, null);
-    }
-    public static Author of(String name, String realName, LocalDate birthday){
-        return new Author(null, name, realName, birthday);
-    }
-    public static Author of(String name){
-        return new Author(null, name, null, null);
-    }
+    @Column(name = "birthday")
+    private LocalDate birthday;
+    /**
+     * Книги автора
+     */
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @EqualsAndHashCode.Exclude
+    private List<Book> books;
 }
