@@ -17,7 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@DisplayName("Класс BookServiceImpl")
+@DisplayName("Класс BookRepository")
 @DataJpaTest
 class BookRepositoryTest {
     @Autowired
