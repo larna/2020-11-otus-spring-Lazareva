@@ -227,10 +227,10 @@ class BookRepositoryJpaTest {
         assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(expectedQueryCount);
     }
 
-    @DisplayName("Должен возвращать все книги")
+    @DisplayName("Должен возвращать все книги согласно фильтру")
     @ParameterizedTest
     @CsvSource(value = {"3,Струг,,", "0, Струг,Приключения,", "3,Струг,Фант,", "1,Струг,Фант,стров", "2,,,стров"})
-    void testFindAll(Integer expectedCount, String authorName, String genreName, String bookName) {
+    void shouldFindAllAccordingFilter(Integer expectedCount, String authorName, String genreName, String bookName) {
         SearchFilter filter = new SearchFilter(authorName, genreName, bookName);
         Page<Book> books = bookRepositoryJpa.findAll(new BookSearchSpecification(filter), PageRequest.of(0, 10));
         assertThat(books).isNotNull().hasSize(expectedCount);
@@ -238,7 +238,7 @@ class BookRepositoryJpaTest {
 
     @DisplayName("Должен возвращать книгу по id")
     @Test
-    void findBookById() {
+    void shouldFindBookById() {
         SessionFactory sessionFactory = em.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
         sessionFactory.getStatistics().setStatisticsEnabled(true);
 
@@ -247,15 +247,13 @@ class BookRepositoryJpaTest {
         int expectedCommentSize = 2;
         int expectedQueryCount = 4;
         Book actual = bookRepositoryJpa.findById(expectedId).get();
+        Book expected = em.find(Book.class, expectedId);
         assertThat(actual)
                 .isNotNull()
-                .hasFieldOrPropertyWithValue("id", expectedId)
-                .hasFieldOrPropertyWithValue("name", EXPECTED_BOOK_NAME)
-                .hasFieldOrPropertyWithValue("isbn", EXPECTED_ISBN)
-                .hasNoNullFieldsOrPropertiesExcept("comments")
-                .hasFieldOrPropertyWithValue("genre", EXPECTED_GENRE)
+                .isEqualTo(expected)
                 .matches(book -> book.getAuthors().contains(EXPECTED_AUTHOR))
                 .matches(book -> book.getComments().size() == expectedCommentSize);
+
         assertThat(sessionFactory.getStatistics().getCollectionLoadCount()).isEqualTo(expectedLoadCollection);
         assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(expectedQueryCount);
     }
