@@ -29,7 +29,7 @@ public class BookRepositoryJpa implements BookRepository {
             em.persist(book);
             return book;
         }
-        return em.merge(book);
+       return em.merge(book);
     }
 
     @Transactional

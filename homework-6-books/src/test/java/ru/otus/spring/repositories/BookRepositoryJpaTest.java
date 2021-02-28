@@ -240,12 +240,13 @@ class BookRepositoryJpaTest {
     @Test
     void shouldFindBookById() {
         SessionFactory sessionFactory = em.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
+        sessionFactory.getStatistics().clear();
         sessionFactory.getStatistics().setStatisticsEnabled(true);
 
         Long expectedId = 5L;
         Long expectedLoadCollection = 2L;
         int expectedCommentSize = 2;
-        int expectedQueryCount = 4;
+        int expectedQueryCount = 3;
         Book actual = bookRepositoryJpa.findById(expectedId).get();
         Book expected = em.find(Book.class, expectedId);
         assertThat(actual)
