@@ -43,9 +43,7 @@ public class BookUpdateHandler {
     public void onApplicationEvent(BookEvent event) {
         Thread.sleep(100);
         try {
-            Book book = bookService.findById(event.getBook().getId());
-            book.setName(event.getBook().getName());
-            book.setIsbn(event.getBook().getIsbn());
+            Book book = event.getBook();
             refreshAuthors(book);
             refreshGenre(book);
             bookService.save(book);
@@ -60,8 +58,7 @@ public class BookUpdateHandler {
             return;
         List<Long> authorsId = book.getAuthors().stream().map(author -> author.getId()).collect(Collectors.toList());
         List<Author> authors = authorService.findAllByIdIn(authorsId);
-        book.getAuthors().clear();
-        book.getAuthors().addAll(authors);
+        book.setAuthors(authors);
     }
 
     private void refreshGenre(Book book) {

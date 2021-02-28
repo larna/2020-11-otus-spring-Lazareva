@@ -21,7 +21,6 @@ public class Genre {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")
-    @EqualsAndHashCode.Exclude
     private Long id;
     /**
      * Название жанра
