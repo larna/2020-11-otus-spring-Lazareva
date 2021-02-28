@@ -30,7 +30,7 @@ public class Genre {
     /**
      * Книги жанра
      */
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "genre", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "genre", cascade = CascadeType.REMOVE)
     @EqualsAndHashCode.Exclude
     private List<Book> books;
 }

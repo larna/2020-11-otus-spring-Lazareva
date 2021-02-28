@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.shell.Shell;
 import org.springframework.test.context.ActiveProfiles;
-import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
@@ -37,8 +36,6 @@ class BookCommandsTest {
     private BookService bookService;
     @MockBean
     private CommentService commentService;
-    @MockBean
-    private EventsPublisher publisher;
     @MockBean(name = "booksView")
     private View<Book> booksVew;
     @MockBean(name = "bookWithCommentsView")
@@ -106,7 +103,7 @@ class BookCommandsTest {
         Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of(author)).build();
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(publisher, Mockito.times(1)).publish(any());
+        Mockito.verify(bookService, Mockito.times(1)).save(any());
     }
 
     @DisplayName("При обновлении должен выводить сообщение об ошибке, если id автора задан неверно")
@@ -115,7 +112,7 @@ class BookCommandsTest {
     void shouldUpdateShowMessageErrorIfAuthorIsNotNumber(String command) {
         final String expectedMessage = "Идентификатор автора должен быть числовым!";
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(publisher, Mockito.times(0)).publish(any());
+        Mockito.verify(bookService, Mockito.times(0)).save(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 

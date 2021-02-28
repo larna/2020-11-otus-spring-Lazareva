@@ -11,6 +11,9 @@ import ru.otus.spring.services.books.BookService;
 
 import java.util.List;
 
+/**
+ * Сервис для работы с комментариями
+ */
 @Service
 @RequiredArgsConstructor
 public class CommentServiceImpl implements CommentService {

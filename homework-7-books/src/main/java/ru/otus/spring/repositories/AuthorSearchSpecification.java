@@ -11,6 +11,9 @@ import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Спецификация поиска по фильтру
+ */
 @RequiredArgsConstructor
 public class AuthorSearchSpecification implements Specification<Author> {
     private final SearchFilter filter;

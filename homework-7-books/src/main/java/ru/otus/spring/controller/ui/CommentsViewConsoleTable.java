@@ -52,7 +52,7 @@ public class CommentsViewConsoleTable implements View<Comment> {
     /**
      * Заполнение таблицы
      *
-     * @param books
+     * @param comments
      * @return
      */
     private AsciiTable getCommentsTable(List<Comment> comments) {
@@ -82,15 +82,4 @@ public class CommentsViewConsoleTable implements View<Comment> {
         return new String[]{idCell, text, book};
     }
 
-//    private String bookToString(Book book) {
-//        StringBuffer text = new StringBuffer();
-//        text.append(book.getName()).append(" - ");
-//        text.append(book.getGenre().getName()).append(" - ");
-//        String authors = book.getAuthors().stream()
-//                .map(author -> author.getName())
-//                .reduce((s1, s2) -> s1 + ", " + s2)
-//                .orElse("авторы не найдены");
-//        text.append(authors);
-//        return text.toString();
-//    }
 }

@@ -44,11 +44,22 @@ public class BookWithCommentsViewConsoleTable implements View<Book> {
      */
     @Override
     public String getObjectView(Book bookWithComments, String message) {
-        if (bookWithComments == null)
+        String bookOut = getBook(bookWithComments);
+        String commentOut = getComments(bookWithComments.getComments());
+        return String.format("%s\n Комментарии книги:\n%s\n%s", bookOut, commentOut, message);
+    }
+
+    private String getBook(Book book) {
+        if (book == null)
             throw new IllegalArgumentException("Для отображения автора передали нулевой объект");
-        String bookOut = getBooksTable(List.of(bookWithComments)).render();
-        String commentOut = getCommentsTable(bookWithComments.getComments()).render();
-        return String.format("%s\n Комментарии книги:\n%s\n%s", bookOut, commentOut , message);
+
+        return getBooksTable(List.of(book)).render();
+    }
+
+    private String getComments(List<Comment> comments) {
+        if (comments == null || comments.isEmpty())
+            return "Список комментариев пуст";
+        return getCommentsTable(comments).render();
     }
 
     /**

@@ -7,14 +7,12 @@ import org.springframework.shell.standard.ShellCommandGroup;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
-import ru.otus.spring.controller.events.EventsPublisher;
 import ru.otus.spring.controller.ui.View;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.services.books.BookNotFoundException;
 import ru.otus.spring.services.books.BookService;
-import ru.otus.spring.services.comments.CommentService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,29 +28,20 @@ public class BookCommands {
      * Значения размера страницы по-умолчанию
      */
     private static final String DEFAULT_PARAM_PAGE_SIZE = "10";
-    private final EventsPublisher eventsPublisher;
     /**
      * Сервис для работы с книгами
      */
     private final BookService bookService;
-    /**
-     * Сервис для работы с комментариями
-     */
-    private final CommentService commentService;
     /**
      * Отображение книг пользователю
      */
     private final View<Book> booksView;
     private final View<Book> bookWithCommentsView;
 
-    public BookCommands(EventsPublisher eventsPublisher,
-                        BookService bookService,
-                        CommentService commentService,
+    public BookCommands(BookService bookService,
                         @Qualifier("booksView") View<Book> booksView,
                         @Qualifier("bookWithCommentsView") View<Book> bookWithCommentsView) {
-        this.eventsPublisher = eventsPublisher;
         this.bookService = bookService;
-        this.commentService = commentService;
         this.booksView = booksView;
         this.bookWithCommentsView = bookWithCommentsView;
     }
@@ -118,10 +107,10 @@ public class BookCommands {
      */
     @ShellMethod(key = {"bu", "book-update"}, value = "Update book")
     public String updateBook(@ShellOption(value = {"-id"}, help = "Book id") Long bookId,
-                           @ShellOption(value = {"-n", "-name"}, help = "Name of book with genre id and list of author's id") String bookName,
-                           @ShellOption(value = {"-i", "-isbn"}, help = "Isbn of book", defaultValue = "") String isbn,
-                           @ShellOption(value = {"-g", "-genre"}, help = "Genre id of book") Long genreId,
-                           @ShellOption(value = {"-a", "-authors"}, help = "Comma separated author's id") String authorsId) {
+                             @ShellOption(value = {"-n", "-name"}, help = "Name of book with genre id and list of author's id") String bookName,
+                             @ShellOption(value = {"-i", "-isbn"}, help = "Isbn of book", defaultValue = "") String isbn,
+                             @ShellOption(value = {"-g", "-genre"}, help = "Genre id of book") Long genreId,
+                             @ShellOption(value = {"-a", "-authors"}, help = "Comma separated author's id") String authorsId) {
 
         try {
             List<Author> authors = getAuthorsFromParameter(authorsId);
@@ -133,11 +122,14 @@ public class BookCommands {
                     .genre(genre)
                     .authors(authors)
                     .build();
-            eventsPublisher.publish(book);
+            bookService.save(book);
+            Book bookWithAllInfo = bookService.findById(book.getId());
+            return booksView.getObjectView(bookWithAllInfo, "Книга успешно изменена");
         } catch (NumberFormatException e) {
             return "Идентификатор автора должен быть числовым!";
+        } catch (Exception e) {
+            return "Книгу не удалось изменить. Проверьте есть ли выбранный вами жанр или авторы...";
         }
-        return "";
     }
 
     /**
