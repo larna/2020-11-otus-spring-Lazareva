@@ -7,7 +7,10 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import ru.otus.spring.controller.SearchFilter;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
@@ -15,7 +18,7 @@ import ru.otus.spring.domain.Genre;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
@@ -27,14 +30,6 @@ class BookRepositoryTest {
     @Autowired
     private BookRepository repository;
 
-    @DisplayName("Должен находить книгу с авторами и жанрами")
-    @Test
-    void shouldFindBookById() {
-        Long bookId = 5L;
-        Book expected = em.find(Book.class, bookId);
-        Book actual = repository.findBookById(bookId);
-        assertThat(actual).isNotNull().isEqualTo(expected);
-    }
     @DisplayName("Должен изменять название книги")
     @Test
     void shouldUpdateBookNameById() {
@@ -45,5 +40,13 @@ class BookRepositoryTest {
         Book actual = em.find(Book.class, bookId);
         assertThat(actual).isNotNull().hasFieldOrPropertyWithValue("name",expectedBookName);
     }
+    @DisplayName("Должен выбирать книги согласно фильтру")
+    @ParameterizedTest
+    @CsvSource(value = {"3,Струг,,", "0, Струг,Приключения,", "3,Струг,Фант,", "1,Струг,Фант,стров", "2,,,стров"})
+    void shouldFindAccordingFilter(Integer expectedCount, String authorName, String genreName, String bookName) {
+        SearchFilter filter = new SearchFilter(authorName, genreName, bookName);
+        Page<Book> books = repository.findAll(new BookSearchSpecification(filter), PageRequest.of(0, 10));
 
+        assertThat(books).isNotNull().hasSize(expectedCount);
+    }
 }
