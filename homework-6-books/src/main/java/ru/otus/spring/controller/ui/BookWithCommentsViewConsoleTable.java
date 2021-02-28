@@ -48,7 +48,7 @@ public class BookWithCommentsViewConsoleTable implements View<Book> {
     public String getObjectView(Book bookWithComments, String message) {
         String bookOut = getBook(bookWithComments);
         String commentOut = getComments(bookWithComments.getComments());
-        return String.format("%s\n Комментарии книги:\n %s \n%s", bookOut, commentOut, message);
+        return String.format("%s\n Комментарии книги: \n%s \n%s", bookOut, commentOut, message);
     }
 
     /**
