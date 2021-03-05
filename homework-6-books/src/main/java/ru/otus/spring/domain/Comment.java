@@ -16,8 +16,6 @@ import javax.persistence.*;
 @Builder
 @Entity
 @Table(name = "comments")
-@NamedEntityGraph(name = "comments-books-entity-graph",
-        attributeNodes = {@NamedAttributeNode("book")})
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +25,7 @@ public class Comment {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private Book book;
 }

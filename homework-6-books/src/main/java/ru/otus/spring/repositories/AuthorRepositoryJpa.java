@@ -24,7 +24,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
     @PersistenceContext
     private EntityManager em;
 
-    @Transactional(readOnly = true)
     @Override
     public List<Author> findAllByNameLike(String authorName) {
         TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a " +
@@ -33,7 +32,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return query.getResultList();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public List<Author> findAllByIdIn(List<Long> idList) {
         TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a " +
@@ -42,7 +40,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return query.getResultList();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Page<Author> findAll(Pageable pageable) {
         TypedQuery<Long> countQuery = em.createQuery("SELECT count(*) FROM Author a", Long.class);
@@ -54,7 +51,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return new PageImpl<Author>(authors, pageable, count);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Page<Author> findAll(AuthorSearchSpecification spec, Pageable pageable) {
         AuthorQueryBuilder queryBuilder = spec.execute();
@@ -78,16 +74,11 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return new PageImpl<Author>(authors, pageable, count);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Author> findById(Long id) {
-        TypedQuery<Author> query = em.createQuery("SELECT a FROM Author a WHERE a.id = :id",
-                Author.class);
-        query.setParameter("id", id);
-        return Optional.ofNullable(query.getSingleResult());
+        return Optional.ofNullable(em.find(Author.class, id));
     }
 
-    @Transactional
     @Override
     public Author save(Author author) {
         if (author.getId() == null || !existsById(author.getId())) {
@@ -97,7 +88,6 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return em.merge(author);
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Boolean existsById(Long id) {
         TypedQuery<Boolean> query = em.createQuery("SELECT EXISTS(SELECT 1 FROM Author a WHERE a.id=:id) FROM Author a", Boolean.class);
@@ -105,11 +95,8 @@ public class AuthorRepositoryJpa implements AuthorRepository {
         return query.getSingleResult();
     }
 
-    @Transactional
     @Override
-    public void deleteById(Long id) {
-        Query query = em.createQuery("DELETE FROM Author a WHERE a.id = :id");
-        query.setParameter("id", id);
-        query.executeUpdate();
+    public void delete(Author author) {
+        em.remove(author);
     }
 }

@@ -1,23 +1,14 @@
 package ru.otus.spring.services.books;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
-import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
-import ru.otus.spring.domain.Comment;
-import ru.otus.spring.domain.Genre;
-import ru.otus.spring.repositories.BookRepository;
-import ru.otus.spring.repositories.BookSearchSpecification;
-import ru.otus.spring.repositories.CommentRepository;
-import ru.otus.spring.services.comments.CommentService;
-
-import java.util.List;
+import ru.otus.spring.repositories.*;
 
 /**
  * Класс реализация сервиса для работы с книгами
@@ -29,7 +20,6 @@ public class BookServiceImpl implements BookService {
      * Репозиторий для работы с книгами
      */
     private final BookRepository bookRepository;
-    private final CommentRepository commentRepository;
 
     /**
      * Сохранить книгу. Если идентиифкатор книги не задан или книги с таким идентиифкатором не существует,
@@ -55,9 +45,10 @@ public class BookServiceImpl implements BookService {
     @Transactional
     @Override
     public Book updateBookName(Long bookId, String bookName) throws BookNotFoundException {
-        if (!bookRepository.existsById(bookId))
-            throw new BookNotFoundException();
-        return bookRepository.updateBookName(bookId, bookName);
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        book.setName(bookName);
+        bookRepository.save(book);
+        return book;
     }
 
     /**
@@ -83,49 +74,9 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     @Override
     public Book findById(Long bookId) throws BookNotFoundException {
-        if (!bookRepository.existsById(bookId))
-            throw new BookNotFoundException();
-        return bookRepository.findBookById(bookId);
-    }
-
-    /**
-     * Найти книгу по isbn
-     *
-     * @param isbn International Standard Book Number
-     * @return найденную книгу
-     * @throws BookNotFoundException если книга не найдена будет выброщено исключение
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Book findByIsbn(String isbn) throws BookNotFoundException {
-        if (!bookRepository.existsBookByIsbn(isbn))
-            throw new BookNotFoundException();
-
-        return bookRepository.findBookByIsbn(isbn);
-    }
-
-    /**
-     * Найти книги по автору
-     *
-     * @param author объект автор
-     * @return список книг
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<Book> findByAuthor(Author author) {
-        return bookRepository.findAllByAuthorsIs(author);
-    }
-
-    /**
-     * Найти все книги по жанру
-     *
-     * @param genre объект жанр
-     * @return список книг
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public List<Book> findByGenre(Genre genre) {
-        return bookRepository.findAllByGenre(genre);
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        Hibernate.initialize(book.getComments());
+        return book;
     }
 
     /**
@@ -152,21 +103,5 @@ public class BookServiceImpl implements BookService {
     public Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable) {
         BookSearchSpecification specification = new BookSearchSpecification(filter);
         return bookRepository.findAll(specification, pageable);
-    }
-
-    /**
-     * Получить книгу со всей информацией включая комментарии
-     *
-     * @param bookId
-     * @return
-     * @throws BookNotFoundException
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Book findBookWithAllInfoById(Long bookId) throws BookNotFoundException {
-        Book book = bookRepository.findBookById(bookId);
-        List<Comment> comments = commentRepository.findAllByBook_Id(bookId);
-        book.setComments(comments);
-        return book;
     }
 }

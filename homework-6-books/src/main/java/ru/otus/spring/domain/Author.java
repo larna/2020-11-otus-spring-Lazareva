@@ -39,11 +39,13 @@ public class Author {
      * взять например: Жорж Санд.
      */
     @Column(name = "real_name")
+    @EqualsAndHashCode.Exclude
     private String realName;
     /**
      * Дата рождения
      */
     @Column(name = "birthday")
+    @EqualsAndHashCode.Exclude
     private LocalDate birthday;
     /**
      * Книги автора

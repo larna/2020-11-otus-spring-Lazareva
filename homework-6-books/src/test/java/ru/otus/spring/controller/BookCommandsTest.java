@@ -247,10 +247,10 @@ class BookCommandsTest {
         Book book = Book.builder().id(1L).name("Test").genre(genre).authors(List.of()).build();
 
         given(bookWithCommentsVew.getObjectView(any(), any())).willReturn(expectedMessage);
-        given(bookService.findBookWithAllInfoById(any())).willReturn(book);
+        given(bookService.findById(any())).willReturn(book);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findBookWithAllInfoById(any());
+        Mockito.verify(bookService, Mockito.times(1)).findById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 
@@ -259,10 +259,10 @@ class BookCommandsTest {
     @CsvSource(value = {"b?id 1", "book-by-id 1"})
     void shouldFindBookByIdShowErrorMessage(String command) {
         final String expectedMessage = "Книга c id=1 не найдена";
-        given(bookService.findBookWithAllInfoById(any())).willThrow(BookNotFoundException.class);
+        given(bookService.findById(any())).willThrow(BookNotFoundException.class);
 
         Object actual = shell.evaluate(() -> command);
-        Mockito.verify(bookService, Mockito.times(1)).findBookWithAllInfoById(any());
+        Mockito.verify(bookService, Mockito.times(1)).findById(any());
         assertThat(actual).isEqualTo(expectedMessage);
     }
 }

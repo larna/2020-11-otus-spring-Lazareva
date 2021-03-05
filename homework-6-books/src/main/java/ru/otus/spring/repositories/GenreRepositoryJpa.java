@@ -18,18 +18,14 @@ public class GenreRepositoryJpa implements GenreRepository {
     @PersistenceContext
     private EntityManager em;
 
-    @Transactional(readOnly = true)
     @Override
     public List<Genre> findAll() {
         TypedQuery<Genre> query = em.createQuery("SELECT g FROM Genre g ORDER BY g.name", Genre.class);
         return query.getResultList();
     }
 
-    @Transactional(readOnly = true)
     @Override
     public Optional<Genre> findById(Long id) {
-        TypedQuery<Genre> query = em.createQuery("SELECT g FROM Genre g WHERE g.id = :id", Genre.class);
-        query.setParameter("id", id);
-        return Optional.ofNullable(query.getSingleResult());
+        return Optional.ofNullable(em.find(Genre.class, id));
     }
 }

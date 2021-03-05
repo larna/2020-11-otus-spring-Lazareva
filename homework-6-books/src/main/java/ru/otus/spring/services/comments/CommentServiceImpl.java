@@ -3,11 +3,8 @@ package ru.otus.spring.services.comments;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
 import ru.otus.spring.repositories.CommentRepository;
-import ru.otus.spring.services.books.BookNotFoundException;
-import ru.otus.spring.services.books.BookService;
 
 import java.util.List;
 
@@ -40,9 +37,8 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     @Override
     public void deleteById(Long commentId) {
-        if (!repository.existsById(commentId))
-            throw new CommentNotFoundException();
-        repository.deleteById(commentId);
+        Comment comment = repository.findById(commentId).orElseThrow(CommentNotFoundException::new);
+        repository.delete(comment);
     }
 
 }

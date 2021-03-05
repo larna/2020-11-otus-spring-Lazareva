@@ -67,9 +67,10 @@ class CommentRepositoryJpaTest {
 
     @DisplayName("Должен удалять комментарий по id")
     @Test
-    void deleteById() {
+    void shouldCorrectDelete() {
         Long expectedId = 1L;
-        commentRepositoryJpa.deleteById(expectedId);
+        Comment comment = em.find(Comment.class, expectedId);
+        commentRepositoryJpa.delete(comment);
         Comment expected = em.find(Comment.class, expectedId);
         assertThat(expected).isNull();
     }

@@ -5,8 +5,6 @@ import org.springframework.data.domain.Pageable;
 import ru.otus.spring.controller.SearchFilter;
 import ru.otus.spring.domain.Author;
 
-import java.util.List;
-
 /**
  * Сервис для работы с авторами
  */
@@ -33,13 +31,6 @@ public interface AuthorService {
      */
     Page<Author> findAll(Pageable pageable);
     /**
-     * Найти всех авторов по заданным id.
-     * @param authorsId список id
-     * @return список найденных авторов
-     */
-    List<Author> findAllByIdIn(List<Long> authorsId);
-
-    /**
      * Найти авторов согласно фильтру
      * @param filter фильтр
      * @param pageable параметры по-страничного вывода
@@ -54,13 +45,4 @@ public interface AuthorService {
      * @throws AuthorNotFoundException если автор не существует будет выброщено исключение
      */
     Author findById(Long authorId) throws AuthorNotFoundException;
-
-    /**
-     * Найти авторов по имени. Поиск производиться с помощью оператора like '%введенная часть имени%'
-     * Поиск чувствителен к регистру.
-     *
-     * @param name имя автора или его часть
-     * @return список авторов
-     */
-    List<Author> findByName(String name);
 }

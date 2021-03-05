@@ -44,15 +44,14 @@ public class Book {
      */
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "genre_id", referencedColumnName = "id")
     private Genre genre;
     /**
      * Авторы
      */
-    @Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @Fetch(FetchMode.SUBSELECT)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(name = "books_authors",
             joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"))
@@ -60,7 +59,7 @@ public class Book {
 
     @Fetch(FetchMode.SELECT)
     @BatchSize(size = 10)
-    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "book", fetch = FetchType.LAZY, cascade = {CascadeType.REMOVE, CascadeType.DETACH})
     @EqualsAndHashCode.Exclude
     private List<Comment> comments;
 }

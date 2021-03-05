@@ -2,17 +2,8 @@ package ru.otus.spring.repositories;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
-import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
-import ru.otus.spring.domain.Genre;
-
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -20,28 +11,45 @@ import java.util.Optional;
  */
 @Repository
 public interface BookRepository {
+    /**
+     * Сохранение книги
+     * @param book объект книги для сохранения
+     * @return объект сохраненной книги
+     */
     Book save(Book book);
 
-    Book updateBookName(Long bookId, String newBookName);
-
+    /**
+     * Удаление книги
+     * @param book объект книги для удаления
+     */
     void delete(Book book);
 
+    /**
+     * Проверка книги на существование
+     * @param id идентиифкатор книги
+     * @return true - если книга существует, false - в противном случае
+     */
     Boolean existsById(Long id);
 
-    Boolean existsBookByIsbn(String isbn);
-
+    /**
+     * Найти книгу по id
+     * @param id
+     * @return
+     */
     Optional<Book> findById(Long id);
 
-    Book findBookByIsbn(String isbn);
-
-    List<Book> findAllByAuthorsIs(Author author);
-
-    List<Book> findAllByGenre(Genre genre);
-
+    /**
+     * Найти все книги. По-страничный вывод
+     * @param pageable
+     * @return страницу книг
+     */
     Page<Book> findAll(Pageable pageable);
-    List<Book> findAll();
 
+    /**
+     * Найти книги по фильтру
+     * @param spec
+     * @param pageable
+     * @return
+     */
     Page<Book> findAll(BookSearchSpecification spec, Pageable pageable);
-
-    Book findBookById(Long id);
 }

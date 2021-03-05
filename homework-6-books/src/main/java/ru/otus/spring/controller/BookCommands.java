@@ -175,7 +175,7 @@ public class BookCommands {
     @ShellMethod(key = {"b?id", "book-by-id"}, value = "Find book by id")
     public String findBook(@ShellOption(value = {"-id"}, help = "Id of book") Long bookId) {
         try {
-            Book book = bookService.findBookWithAllInfoById(bookId);
+            Book book = bookService.findById(bookId);
             return bookWithCommentView.getObjectView(book, "Книга успешно найдена");
         } catch (BookNotFoundException e) {
             return "Книга c id=" + bookId + " не найдена";

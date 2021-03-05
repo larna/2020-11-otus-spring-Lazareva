@@ -2,9 +2,6 @@ package ru.otus.spring.repositories;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import ru.otus.spring.domain.Author;
 
@@ -30,5 +27,5 @@ public interface AuthorRepository {
 
     Boolean existsById(Long id);
 
-    void deleteById(Long id);
+    void delete(Author author);
 }

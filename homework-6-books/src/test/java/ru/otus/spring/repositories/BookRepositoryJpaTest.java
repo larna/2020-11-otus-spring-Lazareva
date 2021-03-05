@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
@@ -83,21 +84,6 @@ class BookRepositoryJpaTest {
                 .matches(book -> book.getAuthors().contains(EXPECTED_AUTHOR));
     }
 
-    @DisplayName("Должен изменять название книги")
-    @Test
-    void shouldUpdateBookName() {
-        Long expectedId = 5L;
-        Book actual = bookRepositoryJpa.updateBookName(expectedId, EXPECTED_NEW_BOOK_NAME);
-        assertThat(actual)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", expectedId)
-                .hasFieldOrPropertyWithValue("name", EXPECTED_NEW_BOOK_NAME)
-                .hasFieldOrPropertyWithValue("isbn", EXPECTED_ISBN)
-                .hasNoNullFieldsOrPropertiesExcept("isbn", "comments")
-                .hasFieldOrPropertyWithValue("genre", EXPECTED_GENRE)
-                .matches(book -> book.getAuthors().contains(EXPECTED_AUTHOR));
-    }
-
     @DisplayName("Должен удалять книгу с комментариями")
     @Test
     void shouldDeleteBookWithComments() {
@@ -130,14 +116,6 @@ class BookRepositoryJpaTest {
         assertEquals(expected, actual);
     }
 
-    @DisplayName("Должен проверять есть ли книга c таким isbn")
-    @ParameterizedTest
-    @CsvSource(value = {"true,1234", "false,12345"})
-    void shouldExistsBookByIsbn(Boolean expected, String isbn) {
-        Boolean actual = bookRepositoryJpa.existsBookByIsbn(isbn);
-        assertEquals(expected, actual);
-    }
-
     @DisplayName("Должен возвращать книгу по id")
     @Test
     void shouldFindById() {
@@ -155,47 +133,6 @@ class BookRepositoryJpaTest {
                 .matches(book -> book.getComments().size() == expectedCommentSize);
     }
 
-    @DisplayName("Должен возвращать книгу по isbn")
-    @Test
-    void shouldFindByIsbn() {
-        Long expectedId = 5L;
-        int expectedCommentSize = 2;
-        Book actual = bookRepositoryJpa.findBookByIsbn(EXPECTED_ISBN);
-        assertThat(actual)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", expectedId)
-                .hasFieldOrPropertyWithValue("name", EXPECTED_BOOK_NAME)
-                .hasFieldOrPropertyWithValue("isbn", EXPECTED_ISBN)
-                .hasNoNullFieldsOrPropertiesExcept("comments")
-                .hasFieldOrPropertyWithValue("genre", EXPECTED_GENRE)
-                .matches(book -> book.getAuthors().contains(EXPECTED_AUTHOR))
-                .matches(book -> book.getComments().size() == expectedCommentSize);
-    }
-
-    @DisplayName("Должен возвращать книги для автора")
-    @Test
-    void shouldFindAllByAuthorsIs() {
-        Long expectedId = 4L;
-        int expectedSize = 3;
-        Author author = em.find(Author.class, expectedId);
-        List<Book> actual = bookRepositoryJpa.findAllByAuthorsIs(author);
-        assertThat(actual)
-                .isNotNull()
-                .hasSize(expectedSize);
-    }
-
-    @DisplayName("Должен возвращать книги для автора")
-    @Test
-    void shouldFindAllByGenre() {
-        Long expectedId = 1L;
-        int expectedSize = 3;
-        Genre genre = em.find(Genre.class, expectedId);
-        List<Book> actual = bookRepositoryJpa.findAllByGenre(genre);
-        assertThat(actual)
-                .isNotNull()
-                .hasSize(expectedSize);
-    }
-
     @DisplayName("Должен возвращать все книги")
     @Test
     void findAll() {
@@ -206,21 +143,6 @@ class BookRepositoryJpaTest {
 
         int expectedSize = 5;
         Page<Book> actual = bookRepositoryJpa.findAll(PageRequest.of(0, 10));
-        assertThat(actual)
-                .isNotNull()
-                .hasSize(expectedSize);
-        assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(expectedQueryCount);
-    }
-    @DisplayName("Должен возвращать все книги")
-    @Test
-    void shouldFindAll() {
-        int expectedQueryCount = 1;
-        SessionFactory sessionFactory = em.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
-        sessionFactory.getStatistics().clear();
-        sessionFactory.getStatistics().setStatisticsEnabled(true);
-
-        int expectedSize = 5;
-        List<Book> actual = bookRepositoryJpa.findAll();
         assertThat(actual)
                 .isNotNull()
                 .hasSize(expectedSize);
@@ -239,14 +161,9 @@ class BookRepositoryJpaTest {
     @DisplayName("Должен возвращать книгу по id")
     @Test
     void shouldFindBookById() {
-        SessionFactory sessionFactory = em.getEntityManager().getEntityManagerFactory().unwrap(SessionFactory.class);
-        sessionFactory.getStatistics().clear();
-        sessionFactory.getStatistics().setStatisticsEnabled(true);
-
         Long expectedId = 5L;
         Long expectedLoadCollection = 2L;
         int expectedCommentSize = 2;
-        int expectedQueryCount = 3;
         Book actual = bookRepositoryJpa.findById(expectedId).get();
         Book expected = em.find(Book.class, expectedId);
         assertThat(actual)
@@ -254,8 +171,5 @@ class BookRepositoryJpaTest {
                 .isEqualTo(expected)
                 .matches(book -> book.getAuthors().contains(EXPECTED_AUTHOR))
                 .matches(book -> book.getComments().size() == expectedCommentSize);
-
-        assertThat(sessionFactory.getStatistics().getCollectionLoadCount()).isEqualTo(expectedLoadCollection);
-        assertThat(sessionFactory.getStatistics().getPrepareStatementCount()).isEqualTo(expectedQueryCount);
     }
 }
