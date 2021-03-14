@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{authors.title})}"></div>
+    <div th:insert="~{fragments/title :: title(title=#{authors.title}, icon='fas fa-user-tie')}"></div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+        <tr>
+            <th th:text="#{authors.thead.name}">Name</th>
+            <th th:text="#{authors.thead.birthday}">Birthday</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="author : ${authors}" th:object="${author}">
+            <td th:text="*{name}">name</td>
+            <td th:text="${#temporals.format(author.birthday, 'dd.MM.yyyy')}"></td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:insert="~{fragments/general :: footer}"></div>
+</div>
+</body>
+</html>

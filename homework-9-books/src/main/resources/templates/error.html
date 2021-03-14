@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{books.title})}"></div>
+    <section class="errors">
+        <div class="alert alert-danger" role="alert">
+            <i class="fas fa-bug"></i>
+            <span th:text="#{errors}">Errors</span>
+            <span th:if="${message != null}" th:text="${message}">message</span>
+        </div>
+    </section>
+    <footer th:insert="~{fragments/general :: footer}"></footer>
+</div>
+</body>
+</html>

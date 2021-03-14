@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+<div th:fragment="menuItem (title, link)">
+    <li class="nav-item">
+        <a class="nav-link" th:href="@{${link}}" th:text="${title}">Title</a>
+    </li>
+</div>
+
+<div th:fragment="topMenu (title)">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <span th:switch="${title}">
+            <a class="navbar-brand" th:case="#{top-menu.item.authors}" th:href="@{/authors}"
+               th:text="#{top-menu.item.authors}">authors</a>
+            <a class="navbar-brand" th:case="#{top-menu.item.books}" th:href="@{/books?page=0}"
+               th:text="#{top-menu.item.books}">books</a>
+            <a class="navbar-brand" th:case="#{top-menu.item.genres}" th:href="@{/genres}"
+               th:text="#{top-menu.item.genres}">genres</a>
+        </span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li th:replace="~{fragments/menu :: menuItem(title=#{top-menu.item.authors}, link='/authors')}"></li>
+                <li th:replace="~{fragments/menu :: menuItem(title=#{top-menu.item.genres}, link='/genres')}"></li>
+                <li th:replace="~{fragments/menu :: menuItem(title=#{top-menu.item.books}, link='/books?page=0')}"></li>
+            </ul>
+        </div>
+        <div class="container-fluid justify-content-center">
+            <form class="d-flex" th:action="@{/books}" th:method="GET">
+                <input class="form-control me-2" type="search"
+                       th:name="bookName"
+                       th:placeholder="#{books.placeholder.search}" aria-label="Search">
+                <button class="btn btn-secondary" type="submit">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
+        <div class="dropdown">
+            <a class="dropdown-toggle language-menuitem nav-link" type="button" id="languageMenuButton" href="#"
+               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-globe-asia"></i>
+                <span th:switch="${#locale.language}">
+                    <span th:case="'ru'">Русский</span>
+                    <span th:case="'en'">English</span>
+                </span>
+            </a>
+            <div class="dropdown-menu" aria-labelledby="languageMenuButton">
+                <a class="dropdown-item" th:href="@{/books?page=0&lang=ru}">Русский</a>
+                <a class="dropdown-item" th:href="@{/books?page=0&lang=en}">Еnglish</a>
+            </div>
+        </div>
+    </nav>
+</div>
+
+</body>
+
+</html>
