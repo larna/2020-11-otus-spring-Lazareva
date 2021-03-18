@@ -21,15 +21,4 @@ public class AuthorDto {
     public AuthorDto() {
         this.authorId = null;
     }
-
-    public static AuthorDto of(Author author){
-        if(author == null)
-            return new AuthorDto();
-        return new AuthorDto(author.getId(), author.getName());
-    }
-    public Author toDomain(){
-        if(authorId == null)
-            return null;
-        return Author.builder().id(authorId).build();
-    }
 }

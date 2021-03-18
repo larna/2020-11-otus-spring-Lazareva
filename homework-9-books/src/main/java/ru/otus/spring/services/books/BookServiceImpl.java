@@ -7,8 +7,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.spring.controller.SearchFilter;
+import ru.otus.spring.controller.dto.AuthorDto;
+import ru.otus.spring.controller.dto.BookDto;
+import ru.otus.spring.controller.dto.GenreDto;
+import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Genre;
 import ru.otus.spring.repositories.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Класс реализация сервиса для работы с книгами
@@ -106,5 +114,50 @@ public class BookServiceImpl implements BookService {
             return bookRepository.findAll(specification, pageable);
 
         return bookRepository.findAll(pageable);
+    }
+
+    /**
+     * Конвертация книги в объект DTO
+     * @param book
+     * @return
+     */
+    @Override
+    public BookDto domainToDto(Book book) {
+        if(book == null)
+            return null;
+        List<AuthorDto> authorsDtoList = book.getAuthors().stream()
+                .map(author -> AuthorDto.builder().authorId(author.getId()).build())
+                .collect(Collectors.toList());
+        GenreDto genreDto = GenreDto.builder().genreId(book.getGenre().getId()).build();
+        BookDto bookForm = BookDto.builder()
+                .id(book.getId())
+                .name(book.getName())
+                .isbn(book.getIsbn())
+                .genre(genreDto)
+                .authors(authorsDtoList)
+                .build();
+        return bookForm;
+    }
+    /**
+     * Конвертация книги в доменный объект Book
+     * @param bookDto
+     * @return
+     */
+    @Override
+    public Book dtoToDomain(BookDto bookDto) {
+        if(bookDto == null)
+            return null;
+        List<Author> authorsList = bookDto.getAuthors().stream()
+                .map(author -> Author.builder().id(author.getAuthorId()).build())
+                .collect(Collectors.toList());
+        Genre genre = Genre.builder().id(bookDto.getGenre().getGenreId()).build();
+        Book book = Book.builder()
+                .id(bookDto.getId())
+                .name(bookDto.getName())
+                .isbn(bookDto.getIsbn())
+                .genre(genre)
+                .authors(authorsList)
+                .build();
+        return book;
     }
 }

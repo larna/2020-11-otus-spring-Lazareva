@@ -3,6 +3,8 @@ package ru.otus.spring.services.comments;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.spring.controller.dto.CommentDto;
+import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
 import ru.otus.spring.repositories.CommentRepository;
 
@@ -39,6 +41,31 @@ public class CommentServiceImpl implements CommentService {
     public void deleteById(Long commentId) {
         Comment comment = repository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         repository.delete(comment);
+    }
+
+    @Override
+    public CommentDto domainToDto(Comment comment) {
+        if(comment == null)
+            return null;
+
+        CommentDto commentDto = CommentDto.builder()
+                .id(comment.getId())
+                .description(comment.getDescription())
+                .build();
+        return commentDto;
+    }
+
+    @Override
+    public Comment dtoToDomain(CommentDto commentDto, Long bookId) {
+        if(commentDto == null)
+            return null;
+
+        Comment comment = Comment.builder()
+                .id(commentDto.getId())
+                .description(commentDto.getDescription())
+                .book(Book.builder().id(bookId).build())
+                .build();
+        return comment;
     }
 
 }

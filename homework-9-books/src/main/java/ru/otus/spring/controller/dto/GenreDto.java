@@ -18,15 +18,4 @@ public class GenreDto {
     public GenreDto() {
         this.genreId = null;
     }
-
-    public static GenreDto of(Genre genre){
-        if(genre == null)
-            return new GenreDto();
-        return new GenreDto(genre.getId(), genre.getName());
-    }
-    public Genre toDomain(){
-        if(genreId == null)
-            return null;
-        return Genre.builder().id(genreId).build();
-    }
 }

@@ -14,19 +14,4 @@ import ru.otus.spring.domain.Comment;
 public class CommentDto {
     private Long id;
     private String description;
-
-    public static CommentDto of(Comment comment) {
-        if (comment == null)
-            return new CommentDto();
-        return new CommentDto(comment.getId(), comment.getDescription());
-    }
-
-    public Comment toDomain(Long bookId) {
-        Book book = Book.builder().id(bookId).build();
-        return Comment.builder()
-                .id(id)
-                .description(description)
-                .book(book)
-                .build();
-    }
 }

@@ -3,6 +3,7 @@ package ru.otus.spring.services.books;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import ru.otus.spring.controller.SearchFilter;
+import ru.otus.spring.controller.dto.BookDto;
 import ru.otus.spring.domain.Book;
 
 /**
@@ -58,4 +59,6 @@ public interface BookService {
      * @return страница найденных книг
      */
     Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable);
+    BookDto domainToDto(Book book);
+    Book dtoToDomain(BookDto bookDto);
 }

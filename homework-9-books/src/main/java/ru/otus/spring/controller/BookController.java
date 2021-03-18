@@ -1,8 +1,6 @@
 package ru.otus.spring.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,7 +19,6 @@ import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Genre;
 import ru.otus.spring.services.authors.AuthorService;
-import ru.otus.spring.services.books.BookException;
 import ru.otus.spring.services.books.BookService;
 import ru.otus.spring.services.genres.GenreService;
 
@@ -33,7 +30,6 @@ import java.util.stream.Collectors;
 @Controller
 @RequiredArgsConstructor
 public class BookController {
-    private final static Logger logger = LoggerFactory.getLogger(BookController.class);
     private final static Integer DEFAULT_SIZE = 6;
     private final BookService bookService;
     private final GenreService genreService;
@@ -53,7 +49,10 @@ public class BookController {
     public List<GenreDto> genres() {
         List<Genre> genres = genreService.findAll();
         return genres.stream()
-                .map(GenreDto::of)
+                .map(genre->GenreDto.builder()
+                        .genreId(genre.getId())
+                        .genreName(genre.getName())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +60,10 @@ public class BookController {
     public List<AuthorDto> authors() {
         List<Author> authors = authorService.findAll();
         return authors.stream()
-                .map(AuthorDto::of)
+                .map(author -> AuthorDto.builder()
+                        .authorId(author.getId())
+                        .authorName(author.getName())
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -116,7 +118,7 @@ public class BookController {
     @GetMapping(value = "/books/{id}/edit")
     public String getEditBookForm(@PathVariable("id") Long id, Model model) {
         Book book = bookService.findById(id);
-        BookDto bookForm = BookDto.of(book);
+        BookDto bookForm = bookService.domainToDto(book);
         model.addAttribute("bookForm", bookForm);
         return "books/input-form";
     }
@@ -132,7 +134,7 @@ public class BookController {
         if (bindingResult.hasErrors()) {
             return "books/input-form";
         }
-        Book book = bookForm.toDomain();
+        Book book = bookService.dtoToDomain(bookForm);
         Book savedBook = bookService.save(book);
         return String.format("redirect:/books/%d/preview", savedBook.getId());
     }
@@ -173,10 +175,5 @@ public class BookController {
         return "books/detail";
     }
 
-    @ExceptionHandler({BookException.class})
-    public String handleErrors(Exception ex, Model model) {
-        model.addAttribute("message","Problems in books...");
-        logger.error("Something went wrong", ex);
-        return "error";
-    }
+
 }

@@ -6,7 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import ru.otus.spring.controller.dto.BookDto;
 import ru.otus.spring.controller.dto.CommentDto;
+import ru.otus.spring.controller.dto.GenreDto;
 import ru.otus.spring.controller.validators.CommentFormValidator;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
@@ -51,7 +53,7 @@ public class CommentController {
         Book book = bookService.findById(bookId);
         Comment comment = commentService.findById(commentId);
         model.addAttribute("book", book);
-        model.addAttribute("comment", CommentDto.of(comment));
+        model.addAttribute("comment", commentService.domainToDto(comment));
 
         return "books/comments/input-form-comment";
     }
@@ -71,7 +73,7 @@ public class CommentController {
             model.addAttribute("book", bookService.findById(bookId));
             return "books/comments/input-form-comment";
         }
-        Comment comment = commentDto.toDomain(bookId);
+        Comment comment = commentService.dtoToDomain(commentDto,bookId);
         commentService.save(comment);
         return "redirect:/books/" + bookId + "/preview";
     }
@@ -88,7 +90,7 @@ public class CommentController {
         Book book = bookService.findById(bookId);
         Comment comment = commentService.findById(commentId);
         model.addAttribute("book", book);
-        model.addAttribute("comment", CommentDto.of(comment));
+        model.addAttribute("comment", commentService.domainToDto(comment));
 
         return "books/comments/delete-comment";
     }
