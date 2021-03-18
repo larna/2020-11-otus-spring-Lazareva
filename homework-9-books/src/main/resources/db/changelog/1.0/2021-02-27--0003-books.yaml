@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021-02-27--0003--books
+      author: larna
+      createTable:
+        tableName: books
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_book
+          - column:
+              name: name
+              type: varchar(255)
+          - column:
+              name: isbn
+              type: varchar(255)
+          - column:
+              name: genre_id
+              type: bigint
+              constraints:
+                nullable: false
+                foreignKeyName: fk_book_genre
+                references: genres(id)
+  - changeSet:
+      id: 2021-02-27--0003--books-authors
+      author: larna
+      createTable:
+        tableName: books_authors
+        columns:
+          - column:
+              name: book_id
+              type: bigint
+              constraints:
+                nullable: false
+                primaryKey: true
+                foreignKeyName: fk_ba_books
+                references: books(id)
+                deleteCascade: true
+          - column:
+              name: author_id
+              type: bigint
+              constraints:
+                nullable: false
+                primaryKey: true
+                foreignKeyName: fk_ba_authors
+                references: authors(id)
+                deleteCascade: true

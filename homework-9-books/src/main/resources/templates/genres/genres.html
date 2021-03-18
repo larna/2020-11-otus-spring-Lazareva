@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{genres.title})}"></div>
+    <div th:insert="~{fragments/title :: title(title=#{genres.title}, icon='fas fa-book-dead')}"></div>
+
+    <table class="table table-striped table-bordered">
+        <thead class="table-light">
+        <tr>
+            <th th:text="#{genres.thead.name}">Genre</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="genre : ${genres}" th:object="${genre}">
+            <td th:text="*{name}">genre name</td>
+        </tr>
+        </tbody>
+    </table>
+    <div th:insert="~{fragments/general :: footer}"></div>
+</div>
+</body>
+</html>

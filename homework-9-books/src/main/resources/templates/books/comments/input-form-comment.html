@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{comments.title})}"></div>
+    <div th:insert="~{fragments/title :: title(title=#{${comment.id == null ? 'comments.new.title' : 'comments.edit.title'}}, icon='fas fa-comments')}"></div>
+
+    <section class="comments-content">
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
+                    <h5 th:text="${book.name}">book name</h5>
+                </div>
+                <h6 class="card-subtitle mb-2 text-muted"
+                    th:text="${book.genre.name}+' '+(${!#strings.isEmpty(book.isbn)} ? 'ISBN:'+${book.isbn} : '')">
+                    genre
+                </h6>
+                <div class="card-text books-card__authors">
+                    <ul class="list-unstyled">
+                        <li th:each="author : ${book.authors}" th:text="${author.name}">author</li>
+                    </ul>
+                </div>
+                <form id="form"
+                      th:action="@{/books/{id}/comments(id=${book.id})}"
+                      th:method="POST"
+                      th:object="${comment}">
+                    <input type="hidden" id="commentId" th:field="*{id}">
+                    <div class="form-group row">
+                        <label for="comment" class="col-sm-12 col-form-label" th:text="#{comments.label.name}"></label>
+                        <div class="col-sm-12">
+                        <textarea class="form-control" id="comment"
+                                  th:field="*{description}" tabindex="1" autofocus
+                                  th:placeholder="#{comments.placeholder.description}"
+                                  th:attrappend="class=${#fields.hasErrors('description')}? ' is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{description}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary" tabindex="2"
+                                    th:text="#{comments.button.save}">save
+                            </button>
+                            <a class="btn btn-light" tabindex="3"
+                               th:text="#{comments.button.cancel}"
+                               th:href="@{/books/{id}/preview(id=${book.id})}"></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer th:insert="~{fragments/general :: footer}"></footer>
+</div>
+</body>
+</html>

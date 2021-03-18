@@ -1,0 +1,163 @@
+package ru.otus.spring.services.books;
+
+import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.otus.spring.controller.SearchFilter;
+import ru.otus.spring.controller.dto.AuthorDto;
+import ru.otus.spring.controller.dto.BookDto;
+import ru.otus.spring.controller.dto.GenreDto;
+import ru.otus.spring.domain.Author;
+import ru.otus.spring.domain.Book;
+import ru.otus.spring.domain.Genre;
+import ru.otus.spring.repositories.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Класс реализация сервиса для работы с книгами
+ */
+@RequiredArgsConstructor
+@Service
+public class BookServiceImpl implements BookService {
+    /**
+     * Репозиторий для работы с книгами
+     */
+    private final BookRepository bookRepository;
+
+    /**
+     * Сохранить книгу. Если идентиифкатор книги не задан или книги с таким идентиифкатором не существует,
+     * то будет создана новая книга. В противном случае, книга будет отредактирована.
+     *
+     * @param book объект книга
+     * @return сохраненный объект книги
+     */
+    @Transactional
+    @Override
+    public Book save(Book book) {
+        return bookRepository.save(book);
+    }
+
+    /**
+     * Изменить название книги
+     *
+     * @param bookId   id книги
+     * @param bookName новое название
+     * @return измененный объект книги
+     * @throws BookNotFoundException при попытке изменить несуществующую книгу будет выброщено исключение
+     */
+    @Transactional
+    @Override
+    public Book updateBookName(Long bookId, String bookName) throws BookNotFoundException {
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        book.setName(bookName);
+        bookRepository.save(book);
+        return book;
+    }
+
+    /**
+     * Удалить книгу
+     *
+     * @param bookId id книги
+     * @throws BookNotFoundException при попытке удалить несуществующую книгу будет выброщено исключение
+     */
+    @Transactional
+    @Override
+    public void delete(Long bookId) throws BookNotFoundException {
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        bookRepository.delete(book);
+    }
+
+    /**
+     * Найти книгу по id
+     *
+     * @param bookId id книги
+     * @return книгу
+     * @throws BookNotFoundException если книга не найдена будет выброщено исключение
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Book findById(Long bookId) throws BookNotFoundException {
+        Book book = bookRepository.findById(bookId).orElseThrow(BookNotFoundException::new);
+        Hibernate.initialize(book.getComments());
+        return book;
+    }
+
+    /**
+     * По-страничный поиск всех книг
+     *
+     * @param pageable параметры по-страничного поиска
+     * @return страница найденных книг
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Book> findAll(Pageable pageable) {
+        return bookRepository.findAll(pageable);
+    }
+
+    /**
+     * По-страничный поиск книг по фильтру
+     *
+     * @param filter   фильр
+     * @param pageable параметры по-страничного поиска
+     * @return страница найденных книг
+     */
+    @Transactional(readOnly = true)
+    @Override
+    public Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable) {
+        BookSearchSpecification specification = new BookSearchSpecification(filter);
+        if(specification.isSatisfied())
+            return bookRepository.findAll(specification, pageable);
+
+        return bookRepository.findAll(pageable);
+    }
+
+    /**
+     * Конвертация книги в объект DTO
+     * @param book
+     * @return
+     */
+    @Override
+    public BookDto domainToDto(Book book) {
+        if(book == null)
+            return null;
+        List<AuthorDto> authorsDtoList = book.getAuthors().stream()
+                .map(author -> AuthorDto.builder().authorId(author.getId()).build())
+                .collect(Collectors.toList());
+        GenreDto genreDto = GenreDto.builder().genreId(book.getGenre().getId()).build();
+        BookDto bookForm = BookDto.builder()
+                .id(book.getId())
+                .name(book.getName())
+                .isbn(book.getIsbn())
+                .genre(genreDto)
+                .authors(authorsDtoList)
+                .build();
+        return bookForm;
+    }
+    /**
+     * Конвертация книги в доменный объект Book
+     * @param bookDto
+     * @return
+     */
+    @Override
+    public Book dtoToDomain(BookDto bookDto) {
+        if(bookDto == null)
+            return null;
+        List<Author> authorsList = bookDto.getAuthors().stream()
+                .map(author -> Author.builder().id(author.getAuthorId()).build())
+                .collect(Collectors.toList());
+        Genre genre = Genre.builder().id(bookDto.getGenre().getGenreId()).build();
+        Book book = Book.builder()
+                .id(bookDto.getId())
+                .name(bookDto.getName())
+                .isbn(bookDto.getIsbn())
+                .genre(genre)
+                .authors(authorsList)
+                .build();
+        return book;
+    }
+}

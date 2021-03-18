@@ -1,0 +1,55 @@
+.btn-new-container{
+    text-align: left;
+    width: 100%;
+    padding-bottom: 5px;
+    padding-left: 15px;
+}
+.btn-action-cell{
+    text-align: center;
+    vertical-align: middle;
+    width: 5%;
+}
+.btn-action-cell__link{
+    font-size: 1.5rem;
+    color: grey;
+}
+.books-title{
+    padding-top: 15px;
+    padding-left: 15px;
+}
+.books-title__icon{
+    color: grey;
+}
+.books-content{
+    margin-right: 15px;
+}
+.books-card{
+    width: 100%;
+    height: 100%;
+    margin: 15px;
+}
+.books-card__authors{
+    min-height: 80px;
+    vertical-align: middle;
+}
+.card-title__delete{
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: grey;
+}
+.card-title__delete:hover{
+    color: #0056b3;
+}
+.errors{
+    margin-top: 20px;
+}
+.language-menuitem{
+ white-space: nowrap;
+    color: #ccc;
+}
+.language-menuitem:hover{
+    white-space: nowrap;
+    color: #fff;
+    cursor: pointer;
+}
