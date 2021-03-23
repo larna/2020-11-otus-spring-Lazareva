@@ -1,6 +1,7 @@
 package ru.otus.spring.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,7 @@ import ru.otus.spring.services.comments.CommentService;
 public class CommentController {
     private final CommentService commentService;
     private final BookService bookService;
+    private final ConversionService conversionService;
 
     @InitBinder("comment")
     public void initBinder(WebDataBinder binder) {
@@ -52,8 +54,9 @@ public class CommentController {
                                      Model model) {
         Book book = bookService.findById(bookId);
         Comment comment = commentService.findById(commentId);
+        CommentDto commentDto = conversionService.convert(comment, CommentDto.class);
         model.addAttribute("book", book);
-        model.addAttribute("comment", commentService.domainToDto(comment));
+        model.addAttribute("comment", commentDto);
 
         return "books/comments/input-form-comment";
     }
@@ -68,12 +71,16 @@ public class CommentController {
                               @ModelAttribute("comment") CommentDto commentDto,
                               BindingResult bindingResult,
                               Model model) {
-        CommentFormValidator.getInstance().validate(commentDto, bindingResult);
+//        CommentFormValidator.getInstance().validate(commentDto, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("book", bookService.findById(bookId));
             return "books/comments/input-form-comment";
         }
-        Comment comment = commentService.dtoToDomain(commentDto,bookId);
+        Comment comment = Comment.builder()
+                .id(commentDto.getId())
+                .description(commentDto.getDescription())
+                .book(Book.builder().id(bookId).build())
+                .build();
         commentService.save(comment);
         return "redirect:/books/" + bookId + "/preview";
     }
@@ -89,8 +96,9 @@ public class CommentController {
                                        Model model) {
         Book book = bookService.findById(bookId);
         Comment comment = commentService.findById(commentId);
+        CommentDto commentDto = conversionService.convert(comment, CommentDto.class);
         model.addAttribute("book", book);
-        model.addAttribute("comment", commentService.domainToDto(comment));
+        model.addAttribute("comment", commentDto);
 
         return "books/comments/delete-comment";
     }

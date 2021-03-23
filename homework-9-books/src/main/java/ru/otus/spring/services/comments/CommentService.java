@@ -38,6 +38,4 @@ public interface CommentService {
      * @param idComment
      */
     void deleteById(Long idComment);
-    CommentDto domainToDto(Comment comment);
-    Comment dtoToDomain(CommentDto commentDto, Long bookId);
 }

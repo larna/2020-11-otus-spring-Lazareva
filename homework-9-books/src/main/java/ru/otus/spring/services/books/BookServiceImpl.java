@@ -110,54 +110,9 @@ public class BookServiceImpl implements BookService {
     @Override
     public Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable) {
         BookSearchSpecification specification = new BookSearchSpecification(filter);
-        if(specification.isSatisfied())
+        if (specification.isSatisfied())
             return bookRepository.findAll(specification, pageable);
 
         return bookRepository.findAll(pageable);
-    }
-
-    /**
-     * Конвертация книги в объект DTO
-     * @param book
-     * @return
-     */
-    @Override
-    public BookDto domainToDto(Book book) {
-        if(book == null)
-            return null;
-        List<AuthorDto> authorsDtoList = book.getAuthors().stream()
-                .map(author -> AuthorDto.builder().authorId(author.getId()).build())
-                .collect(Collectors.toList());
-        GenreDto genreDto = GenreDto.builder().genreId(book.getGenre().getId()).build();
-        BookDto bookForm = BookDto.builder()
-                .id(book.getId())
-                .name(book.getName())
-                .isbn(book.getIsbn())
-                .genre(genreDto)
-                .authors(authorsDtoList)
-                .build();
-        return bookForm;
-    }
-    /**
-     * Конвертация книги в доменный объект Book
-     * @param bookDto
-     * @return
-     */
-    @Override
-    public Book dtoToDomain(BookDto bookDto) {
-        if(bookDto == null)
-            return null;
-        List<Author> authorsList = bookDto.getAuthors().stream()
-                .map(author -> Author.builder().id(author.getAuthorId()).build())
-                .collect(Collectors.toList());
-        Genre genre = Genre.builder().id(bookDto.getGenre().getGenreId()).build();
-        Book book = Book.builder()
-                .id(bookDto.getId())
-                .name(bookDto.getName())
-                .isbn(bookDto.getIsbn())
-                .genre(genre)
-                .authors(authorsList)
-                .build();
-        return book;
     }
 }

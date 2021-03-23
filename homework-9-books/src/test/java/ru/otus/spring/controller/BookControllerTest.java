@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -50,10 +51,12 @@ class BookControllerTest {
     private AuthorService authorService;
     @MockBean
     private GenreService genreService;
+    @Autowired
+    private ConversionService conversionService;
 
     @BeforeEach
     public void setup() {
-        BookController bookController = new BookController(bookService, genreService, authorService);
+        BookController bookController = new BookController(bookService, genreService, authorService, conversionService);
         this.mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
     }
 

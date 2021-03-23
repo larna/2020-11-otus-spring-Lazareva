@@ -2,6 +2,7 @@ package ru.otus.spring.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ public class BookController {
     private final BookService bookService;
     private final GenreService genreService;
     private final AuthorService authorService;
+    private final ConversionService conversionService;
 
 
     @InitBinder("bookForm")
@@ -49,7 +51,7 @@ public class BookController {
     public List<GenreDto> genres() {
         List<Genre> genres = genreService.findAll();
         return genres.stream()
-                .map(genre->GenreDto.builder()
+                .map(genre -> GenreDto.builder()
                         .genreId(genre.getId())
                         .genreName(genre.getName())
                         .build())
@@ -118,7 +120,7 @@ public class BookController {
     @GetMapping(value = "/books/{id}/edit")
     public String getEditBookForm(@PathVariable("id") Long id, Model model) {
         Book book = bookService.findById(id);
-        BookDto bookForm = bookService.domainToDto(book);
+        BookDto bookForm = conversionService.convert(book, BookDto.class);
         model.addAttribute("bookForm", bookForm);
         return "books/input-form";
     }
@@ -134,7 +136,7 @@ public class BookController {
         if (bindingResult.hasErrors()) {
             return "books/input-form";
         }
-        Book book = bookService.dtoToDomain(bookForm);
+        Book book = conversionService.convert(bookForm, Book.class);
         Book savedBook = bookService.save(book);
         return String.format("redirect:/books/%d/preview", savedBook.getId());
     }
