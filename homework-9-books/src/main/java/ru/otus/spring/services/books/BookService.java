@@ -59,6 +59,4 @@ public interface BookService {
      * @return страница найденных книг
      */
     Page<Book> findAllByFilter(SearchFilter filter, Pageable pageable);
-    BookDto domainToDto(Book book);
-    Book dtoToDomain(BookDto bookDto);
 }

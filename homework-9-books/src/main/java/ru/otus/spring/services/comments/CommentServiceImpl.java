@@ -42,30 +42,4 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = repository.findById(commentId).orElseThrow(CommentNotFoundException::new);
         repository.delete(comment);
     }
-
-    @Override
-    public CommentDto domainToDto(Comment comment) {
-        if(comment == null)
-            return null;
-
-        CommentDto commentDto = CommentDto.builder()
-                .id(comment.getId())
-                .description(comment.getDescription())
-                .build();
-        return commentDto;
-    }
-
-    @Override
-    public Comment dtoToDomain(CommentDto commentDto, Long bookId) {
-        if(commentDto == null)
-            return null;
-
-        Comment comment = Comment.builder()
-                .id(commentDto.getId())
-                .description(commentDto.getDescription())
-                .book(Book.builder().id(bookId).build())
-                .build();
-        return comment;
-    }
-
 }
