@@ -10,7 +10,6 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @SpringBootApplication
 @EnableConfigurationProperties
-@EnableMongock
 @EnableMongoRepositories(basePackages = "ru.otus.spring.repositories")
 public class Application {
     public static void main(String[] args) {

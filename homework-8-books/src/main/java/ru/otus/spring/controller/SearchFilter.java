@@ -1,6 +1,7 @@
 package ru.otus.spring.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 /**
@@ -8,6 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
+@Builder
 public class SearchFilter {
     /**
      * Имя автора

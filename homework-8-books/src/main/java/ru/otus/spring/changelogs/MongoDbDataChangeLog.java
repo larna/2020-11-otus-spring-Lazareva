@@ -5,9 +5,6 @@ import com.github.cloudyrock.mongock.ChangeSet;
 import com.github.cloudyrock.mongock.driver.mongodb.springdata.v3.decorator.impl.MongockTemplate;
 import com.mongodb.client.MongoDatabase;
 import org.springframework.core.annotation.Order;
-import org.springframework.data.domain.Example;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import ru.otus.spring.domain.Author;
 import ru.otus.spring.domain.Book;
 import ru.otus.spring.domain.Comment;
@@ -54,7 +51,7 @@ public class MongoDbDataChangeLog {
                 LocalDate.of(1933,4,15)));
         authors.put("Stivenson", getAuthor("Роберт Стивенсон", null,
                 LocalDate.of(1850,11,13)));
-        authors.values().stream().forEach(author -> template.save(author));
+        authors.values().forEach(template::save);
     }
     @ChangeSet(order = "003", systemVersion = "1", id = "initBooks", author = "larna", runAlways = true)
     public void initBooks(MongockTemplate template){
