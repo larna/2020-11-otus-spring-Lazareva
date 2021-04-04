@@ -1,0 +1,16 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: test_book
+      host: localhost
+  shell:
+    interactive:
+      enabled: false
+
+logging:
+  level:
+    org.springframework: "info"
+    ru.otus.spring: "info"
+
+
