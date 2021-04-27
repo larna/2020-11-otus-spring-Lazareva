@@ -1,0 +1,16 @@
+spring:
+  data:
+    mongodb:
+      port: 0
+      database: test_book
+      host: localhost
+
+logging:
+  level:
+    org.springframework: "info"
+    ru.otus.spring: "info"
+
+server:
+  port: 8091
+  servlet:
+    context-path: /api

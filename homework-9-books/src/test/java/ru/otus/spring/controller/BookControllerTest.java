@@ -56,8 +56,6 @@ class BookControllerTest {
 
     @BeforeEach
     public void setup() {
-        BookController bookController = new BookController(bookService, genreService, authorService, conversionService);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(bookController).build();
     }
 
     @DisplayName("Должен корректно показывать книги")
