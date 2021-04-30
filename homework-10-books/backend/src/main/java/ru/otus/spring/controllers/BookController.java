@@ -17,12 +17,13 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/books")
 public class BookController {
     private final static Integer DEFAULT_SIZE = 6;
     private final BookService bookService;
     private final BooksConversionService<Book, BookDto> bookConversionService;
 
-    @GetMapping(value = "/books")
+    @GetMapping
     public Page<BookDto> getBooks(@RequestParam(value = "page", defaultValue = "0") Integer page,
                                   @RequestParam(value = "bookName", defaultValue = "", required = false) String bookName) {
         SearchFilter filter = SearchFilter.builder().bookName(bookName).build();
@@ -30,23 +31,14 @@ public class BookController {
         return bookConversionService.toPageOfDto(books);
     }
 
-    @PostMapping(value = "/books")
+    @PostMapping
     public BookDto saveBook(@RequestBody @Valid BookDto bookForm, BindingResult result) {
         return save(bookForm, result);
     }
 
-    @PutMapping(value = "/books")
+    @PutMapping
     public BookDto updateBook(@RequestBody @Valid BookDto bookForm, BindingResult result) {
         return save(bookForm, result);
-    }
-
-    private BookDto save(BookDto bookDto, BindingResult result) {
-        if (result.hasErrors()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getAllErrors().toString());
-        }
-        Book book = bookConversionService.toDomain(bookDto);
-        bookService.save(book);
-        return bookConversionService.toDto(book);
     }
 
     /**
@@ -54,7 +46,7 @@ public class BookController {
      *
      * @return
      */
-    @GetMapping(value = "/books/{id}")
+    @GetMapping(value = "/{id}")
     public BookDto getDetailBook(@PathVariable("id") String id) {
         try {
             Book book = bookService.findById(id);
@@ -67,12 +59,21 @@ public class BookController {
     /**
      * Удаление книги
      */
-    @DeleteMapping(value = "/books/{id}")
+    @DeleteMapping(value = "/{id}")
     public void deleteBook(@PathVariable("id") String id) {
         try {
             bookService.delete(id);
         } catch (BookNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Книга не найдена id = " + id, ex);
         }
+    }
+
+    private BookDto save(BookDto bookDto, BindingResult result) {
+        if (result.hasErrors()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, result.getAllErrors().toString());
+        }
+        Book book = bookConversionService.toDomain(bookDto);
+        bookService.save(book);
+        return bookConversionService.toDto(book);
     }
 }

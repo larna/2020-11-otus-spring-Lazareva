@@ -18,29 +18,41 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/books/{bookId}/comments")
 public class CommentController {
     private final CommentService commentService;
     private final BookService bookService;
     private final BooksConversionService<Comment, CommentDto> commentConversionService;
 
-    @GetMapping(value = "/books/{bookId}/comments")
+    @GetMapping
     public List<CommentDto> getComments(@PathVariable("bookId") String bookId) {
         List<Comment> comments = commentService.findByBookId(bookId);
         return commentConversionService.toListOfDto(comments);
     }
 
-    @PostMapping(value = "/books/{bookId}/comments")
+    @PostMapping
     public CommentDto createComment(@PathVariable("bookId") String bookId,
                                     @RequestBody @Valid CommentDto commentDto,
                                     BindingResult result) {
         return save(bookId, commentDto, result);
     }
 
-    @PutMapping(value = "/books/{bookId}/comments")
+    @PutMapping
     public CommentDto updateComment(@PathVariable("bookId") String bookId,
                                     @RequestBody @Valid CommentDto commentDto,
                                     BindingResult result) {
         return save(bookId, commentDto, result);
+    }
+
+    @DeleteMapping(value = "/{commentId}")
+    public void deleteComment(@PathVariable("commentId") String id) {
+        commentService.delete(id);
+    }
+
+    @GetMapping(value = "/{commentId}")
+    public CommentDto getComment(@PathVariable("commentId") String commentId) {
+        Comment comment = commentService.findById(commentId);
+        return commentConversionService.toDto(comment);
     }
 
     private CommentDto save(String bookId, CommentDto commentDto, BindingResult result) {
@@ -56,16 +68,5 @@ public class CommentController {
         } catch (BookNotFoundException ex) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "comment save error", ex);
         }
-    }
-
-    @DeleteMapping(value = "/books/{bookId}/comments/{commentId}")
-    public void deleteComment(@PathVariable("commentId") String id) {
-        commentService.delete(id);
-    }
-
-    @GetMapping(value = "/books/{bookId}/comments/{commentId}")
-    public CommentDto getComment(@PathVariable("commentId") String commentId) {
-        Comment comment = commentService.findById(commentId);
-        return commentConversionService.toDto(comment);
     }
 }
