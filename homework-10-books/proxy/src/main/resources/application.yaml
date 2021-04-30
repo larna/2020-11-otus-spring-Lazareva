@@ -1,0 +1,14 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: backend
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/**
+        - id: frontend
+          uri: http://localhost:9000
+          predicates:
+            - Path=/books/**
+server:
+  port: 8081

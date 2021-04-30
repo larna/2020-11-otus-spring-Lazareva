@@ -29,3 +29,5 @@ logging:
     org.springframework: ERROR
     ru.otus.spring: ERROR
 
+server:
+  port: 8081
