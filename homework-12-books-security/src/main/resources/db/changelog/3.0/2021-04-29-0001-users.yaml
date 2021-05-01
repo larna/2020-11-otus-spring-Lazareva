@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2021-04-29--0001--users
+      author: larna
+      createTable:
+        tableName: users
+        columns:
+          - column:
+              name: id
+              type: bigint
+              autoIncrement: true
+              constraints:
+                nullable: false
+                primaryKey: true
+                primaryKeyName: pk_users
+          - column:
+              name: name
+              type: varchar(35)
+              constraints:
+                nullable: false
+          - column:
+              name: password
+              type: varchar(35)
+              constraints:
+                nullable: false

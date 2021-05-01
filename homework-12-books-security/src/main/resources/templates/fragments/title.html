@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="title (title, icon)">
+    <h1 class="books-title">
+        <i th:class="${icon}+' books-title__icon'"></i>
+        <span th:text="${title}">title</span>
+    </h1>
+</div>
+</body>

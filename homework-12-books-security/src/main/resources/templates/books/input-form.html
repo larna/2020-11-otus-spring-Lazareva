@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{books.title})}"></div>
+    <div th:insert="~{fragments/title :: title(title=#{${bookForm.id == null ? 'books.new.title' : 'books.edit.title'}}, icon='fas fa-book-open')}"></div>
+
+    <section class="books-content">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title" th:text="#{books.new.invite-message}"></h5>
+                <form id="form" th:action="@{/books}" th:method="POST" th:object="${bookForm}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <input type="hidden" id="bookId" th:field="*{id}">
+
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors('*')}">
+                        <p th:each="err : ${#fields.errors('*')}" th:text="${err}"></p>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="bookName" class="col-sm-2 col-form-label" th:text="#{books.label.name}"></label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="bookName" autofocus
+                                   th:field="*{name}"
+                                   th:placeholder="#{books.placeholder.name}"
+                                   th:attrappend="class=${#fields.hasErrors('name')}? ' is-invalid'">
+                            <div class="invalid-feedback" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="isbn" class="col-sm-2 col-form-label" th:text="#{books.label.isbn}"></label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="isbn" maxlength="10" th:required
+                                   th:field="*{isbn}" th:placeholder="#{books.placeholder.isbn}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="genre" class="col-sm-2 col-form-label"
+                               th:text="#{books.label.genre}">genres</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="genre" th:field="*{genre}"
+                                    th:attrappend="class=${#fields.hasErrors('genre')}? ' is-invalid'">
+                                <option th:each="genre: ${genres}" th:text="${genre.genreName}"
+                                        th:value="${genre}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{genre}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="authors" class="col-sm-2 col-form-label"
+                               th:text="#{books.label.authors}">authors</label>
+                        <div class="col-sm-10">
+                            <select multiple class="form-control" id="authors" th:field="*{authors}" size="7"
+                                    th:attrappend="class=${#fields.hasErrors('authors')}? ' is-invalid'">
+                                <option th:each="author: ${authors}" th:text="${author.authorName}"
+                                        th:value="${author}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{authors}"></div>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            <button type="submit" class="btn btn-primary" th:text="#{books.button.save}">save
+                            </button>
+                            <a class="btn btn-light" th:text="#{books.button.cancel}" th:href="@{/books}"></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+    <footer th:insert="~{fragments/general :: footer}"></footer>
+</div>
+</body>
+</html>

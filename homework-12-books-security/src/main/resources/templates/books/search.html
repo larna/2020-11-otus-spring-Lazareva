@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/general :: commonHeader}"></head>
+
+<body>
+
+<div class="container">
+    <div th:insert="~{fragments/menu :: topMenu(title=#{books.title})}"></div>
+    <div th:insert="~{fragments/title :: title(title=#{books.title}, icon='fas fa-book-open')}"></div>
+    <div class="btn-new-container">
+        <div th:replace="~{fragments/general :: actionCreate(title=#{books.search.title}, link='/books/new')}"></div>
+    </div>
+    <div class="alert alert-secondary" role="alert"
+         th:text="#{books.list.not-found}" th:if="${books.size == 0}">
+        books not found
+    </div>
+    <section class="books-content" th:if="${books.size > 0}">
+        <div class="row row-cols-3 align-items-start">
+            <div class="col-4" th:each="book : ${books}">
+                <article class="card books-card">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h5 th:text="${book.name}">book name</h5>
+                            <a class="card-title__delete" th:href="@{/books/{id}/delete(id=${book.id})}">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        </div>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${book.genre.name}">genre</h6>
+                        <div class="card-text books-card__authors">
+                            <ul class="list-unstyled">
+                                <li th:each="author : ${book.authors}" th:text="${author.name}">author</li>
+                            </ul>
+                        </div>
+                        <a href="#" th:href="@{/books/{id}/edit(id=${book.id})}"    class="card-link"
+                           th:text="#{books.edit.title}">edit</a>
+                        <a href="#" th:href="@{/books/{id}/preview(id=${book.id})}" class="card-link"
+                           th:text="#{books.detail.title}">detail</a>
+                    </div>
+                </article>
+            </div>
+        </div>
+        <nav aria-label="Page navigation books" th:if="${totalPages > 1}">
+            <ul class="pagination justify-content-center">
+                <li class="page-item"
+                    th:with="prevPage=${page - 1}, disabledPrev=${prevPage<0} ? 'disabled' :''"
+                    th:attrappend="class=${' ' + disabledPrev}">
+                    <a class="page-link" tabindex="-1" aria-disabled="true"
+                       th:href="@{/books(page=${page-1})}"
+                       th:text="#{books.pagination.prev}">Previous</a>
+                </li>
+                <li class="page-item"
+                    th:with="nextPage=${page + 1}, disabledNext=${nextPage==totalPages} ? 'disabled' :''"
+                    th:attrappend="class=${' ' + disabledNext}">
+                    <a class="page-link"
+                       th:href="@{/books(page=${page+1})}"
+                       th:text="#{books.pagination.next}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </section>
+    <footer th:insert="~{fragments/general :: footer}"></footer>
+</div>
+</body>
+</html>
