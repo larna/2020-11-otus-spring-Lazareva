@@ -1,0 +1,14 @@
+spring:
+  data:
+    mongodb:
+      uri: ${URI}
+logging:
+  level:
+    root: WARN
+  output:
+    ansi:
+      enabled: always
+server:
+  port: 8082
+  servlet:
+    context-path: /api
